@@ -1,2 +1,6 @@
-/JavaApplication3/nbproject/private/
 /Gomoku/build/
+/Gomoku/nbproject/
+/Gomoku/build.xml
+/Gomoku/manifest.mf
+*~
+.DS*
