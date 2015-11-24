@@ -1,0 +1,83 @@
+PJ :
+Logic Game 
+1. Game bisa dimainkan (tampilannya CLI aja)
+2. Dimainkannya dalam satu program.
+3. Dimainkan minimal 3 orang (bisa lebih dari 3)
+4. Dapat menampilkan kelima biji yang membuat game selesai (menang)
+
+PJ :
+Communication
+1. Server dan client bisa berkomunikasi
+2. Client minimal tiga
+3. Membuat nickname dan roomnya
+4. Membuat fitur waiting room
+5. Berkomunikasi dengan server dengan memberikan informasi
+6. Mengatur jalannya turn based
+7. Menghadapi putusnya koneksi
+8. Menghadapi kondisi menang 
+9. Client yang berfungsi sebagai berikut :
+	- Mengirimkan koordinat kepada server
+	- Blocking bila belum mendapat giliran untuk jalan
+	- Menerima sinyal dari server bahwa sudah boleh jalan
+	- Menerima informasi pemenang
+10. Server yang berfungsi sebagai berikut :
+	- Mengolah informasi dari client (cuma perlihatkan bahwa client bisa mengolah informasi)
+	- Mengatur turn based dan memberikan protokol siapa saja yang bisa jalan
+
+PJ :
+GUI (Buat GUI sesuai dengan spek)
+1. Buat tampilan waiting room dan start
+2. Buat tampilan board sesuai spek
+3. Board bisa diklik dan bisa menginput simbol/warna yang berbeda 
+4. Blocking board sehingga board gak bisa diklik
+5. Tampilan 5 biji yang menang
+6. Tampilan notifikasi pemenang kepada seluruh pengguna
+
+
+******************************************** Spesifikasi *******************************************************
+Membuat sebuah variasi dari game Gomoku
+Spesifikasi :
+- Game dimainkan oleh 3 atau lebih orang
+- Menggunakan arsitektur Client-Server
+- Menggunakan TCP sebagai koneksinya
+- Memiliki antarmuka
+
+Rule game:
+- Game dapat dimainkan oleh 3 atau lebih orang dengan aturan yang sama dengan aturan asli yaitu turn based.
+- Aturan yang digunakan adalah “Free-style gomoku” pada Wikipedia, abaikan variasi lainnya pada Wikipedia selain “Free-style gomoku”
+
+Board:
+- Board berukuran grid 20x20
+- Setiap player memiliki symbol yang berbeda satu sama lain (boleh X, O, ?, atau yang lainnya)
+- Tampilan menampilkan board, player yang sedang bermain direpresentasikan oleh nickname nya, nama dari room tempat bermain
+
+GUI:
+- Dibebaskan sesuai kreasi sendiri untuk membuat tampilan GUI yang menarik
+- Untuk tampilan board, mengacu pada spesifikasi board untuk benda yang harus ditampilkan
+
+Program client harus memiliki GUI, sedangkan program server tidak perlu memiliki GUI (console diperbolehkan).
+Semua lojik pemrosesan game dilakukan pada sisi server.
+
+Alur umum :
+- Memasukkan “nickname” player
+- Player dapat membuat room baru atau join ke dalam room yang sudah ada
+- Game dimulai ketika 3 player atau lebih bergabung ke dalam satu room (mekanisme untuk memulai game diserahkan kepada anda)
+- Ketika ada yang memenangkan game, tampilan pada pemenang menyatakan “Anda menang” dan tampilan pada player lain yang kalah adalah “<Nickname pemenang> adalah pemenangnya!” Tampilkan juga kelima biji yang berurutan dengan tanda tertentu.
+- Setelah game selesai user dikembalikan ke antarmuka sebelumnya
+
+Library yang boleh dipergunakan adalah:
+- Library standard bawaan bahasa
+- Semua jenis library GUI
+- Semua jenis library Threading (termasuk locking dan thread pool)
+- Library networking hanya terbatas pada Socket dan Serversocket TCP. Boleh menggunakan synchronous ataupun asynchronous socket.
+- Library lainnya tergantung seizing asisten (harap ditanyakan pada milis)
+- Tidak diperkenankan menggunakan library HTTP maupun web service.
+- Program dapat dijalankan pada sistem operasi Windows atau Linux.
+
+
+******************************************** Bonus **************************************************
+- Room memiliki sebuah chatbox yang dapat digunakan player yang sedang bermain di room tersebut untuk berkomunikasi
+- Room dapat dimasuki oleh orang yang ingin menjadi spectator (tidak bermain, hanya melihat permainan yang sedang berlangsung)
+- Menyimpan highscore yang dapat ditampilkan dari menu utama
+
+
