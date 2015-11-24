@@ -224,8 +224,9 @@ public class GomokuGame {
         boolean finished = false;
         int id = 0;
         List<Position> result = new ArrayList<Position>();
+        int player = 3;
         while(!finished) {
-            id = (id % 1) + 1;
+            id = (id % player) + 1;
             System.out.print("Pemain " + id + " input : ");
             row = sc.nextInt();
             col = sc.nextInt();
