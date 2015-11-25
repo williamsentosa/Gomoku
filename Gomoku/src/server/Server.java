@@ -8,11 +8,12 @@ package server;
 
 import java.net.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Observer;
-import java.util.Observable;
 import module.Request;
+import module.Response;
+import module.Room;
 import module.User;
 
 /**
@@ -21,10 +22,10 @@ import module.User;
  */
 public class Server implements Runnable
 {
-    public static int activePlayer = 0;
+    public static ArrayList<User> users = new ArrayList<>();
+    public static ArrayList<Room> rooms = new ArrayList<>();
     
     private Socket clientSocket;
-    private User user;
    
     public Server(Socket clientSocket) throws IOException
     {
@@ -34,44 +35,109 @@ public class Server implements Runnable
     @Override
     public void run()
     {
+        User user = null;
         try
         {
             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
             Request req = new Request(in.readUTF());
-            String resp = "success connection-established";
             
-            user = new User(req.getParameters()[0], req.getParameters()[1]);
-            System.out.println("ROOM " + user.getRoom() + ": " + user.getName() + " connected.\nCurrent Active Players: " + ++activePlayer);
+            user = new User(req.getParameters().get(0));
+            users.add(user);
+            System.out.println(user.getName() + " connected.\nCurrent Active Players: " + users.size());
             
-            DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
-            out.writeUTF(resp);
+            Response resp = new Response("login", user);
+            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+            out.writeObject(resp);
             
             while (true) {
                 in = new DataInputStream(clientSocket.getInputStream());
                 req = new Request(in.readUTF());
-                resp = "SUCCESS";
+                resp = new Response("error", "unknown");
                 
-                if (req.getCommand().equals("create-room")) {
-                    
-                } else if (req.getCommand().equals("join-room")) {
-                    
-                } else if (req.getCommand().equals("start-room")) {
-                    
-                } else if (req.getCommand().equals("exit-room")) {
-                    
-                } else if (req.getCommand().equals("move")) {
-                    
-                } else {
-                    resp = "error unidentified-command";
+                switch (req.getCommand()) {
+                    case "create-room":
+                        String roomName = req.getParameters().get(0);
+                        
+                        boolean found = false;
+                        for (Room r : rooms) {
+                            if (r.getName().equals(roomName)) {
+                                found = true;
+                            }
+                        }
+                        
+                        if (!found) {
+                            Room room = new Room(roomName);
+                            //Current room status is waiting for players
+                            rooms.add(room);
+                        }
+                        
+                        resp = new Response("get-rooms", rooms);
+                        
+                        break;
+                    case "join-room":
+                        String roomToJoin = req.getParameters().get(0);
+                        for (Room r : rooms) {
+                            if (r.getName().equals(roomToJoin)) {
+                                r.addUser(user);
+                                
+                                resp = new Response("get-rooms", rooms);
+                                break;
+                            }
+                        }
+                        break;
+                    case "start-room":
+                        String roomToStart = req.getParameters().get(0);
+                        for (Room r : rooms) {
+                            if (r.getName().equals(roomToStart)) {
+                                if (r.getStatus() == Room.IS_PLAYABLE) {
+                                    r.setStatus(Room.IS_PLAYING);
+                                }
+                                
+                                resp = new Response("get-rooms", rooms);
+                                break;
+                            }
+                        }
+                        break;
+                    case "exit-room":
+                        String roomToExit = req.getParameters().get(0);
+                        for (Room r : rooms) {
+                            if (r.getName().equals(roomToExit)) {
+                                r.removeUser(user);
+                                
+                                resp = new Response("get-rooms", rooms);
+                                break;
+                            }
+                        }
+                        break;
+                    case "move":
+                        
+                        break;
+                    case "get-board":
+                        String roomToGet = req.getParameters().get(0);
+                        for (Room r : rooms) {
+                            if (r.getName().equals(roomToGet)) {
+                                resp = new Response("get-gomoku", r.getGomokuGame());
+                            }
+                        }
+                        break;
+                    default:
+                        
+                        resp = new Response("error", "unidentified-request");
+                        break;
                 }
-
-                out = new DataOutputStream(clientSocket.getOutputStream());
-                out.writeUTF(resp);
+                
+                out = new ObjectOutputStream(clientSocket.getOutputStream());
+                out.writeObject(resp);
             }
         } catch(SocketTimeoutException s) {
             System.out.println("Socket timed out!");
         } catch(IOException e) {
-            System.out.println("ROOM " + user.getRoom() + ": " + user.getName() + " disconnected.\nCurrent Active Players: " + --activePlayer);
+            if (user != null) {
+                users.remove(user);
+                System.out.println(user.getName() + " disconnected.\nCurrent Active Players: " + users.size());
+            } else {
+                e.printStackTrace();
+            }
         }
     }
    

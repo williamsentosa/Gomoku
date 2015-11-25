@@ -5,18 +5,29 @@
  */
 package module;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  *
  * @author natanelia
  */
 public class Request {
     private String command;
-    private String[] parameters;
+    private ArrayList<String> parameters = new ArrayList<>();
 
     public Request(String req) {
-        String[] reqSplitted = req.split(" ");
-        this.command = reqSplitted[0];
-        this.parameters = req.substring(this.command.length() + 1).split(" ");
+        if (req.contains(" ")) {
+            String[] reqSplitted = req.split(" ");
+            this.command = reqSplitted[0];
+
+            String[] paramSplitted = req.substring(this.command.length() + 1).split(" ");
+            for (String s : paramSplitted) {
+                parameters.add(s);
+            }
+        } else {
+            this.command = req;
+        }
     }
 
     public String getCommand() {
@@ -26,14 +37,25 @@ public class Request {
     public void setCommand(String command) {
         this.command = command;
     }
-
-    public String[] getParameters() {
+    
+    public ArrayList<String> getParameters() {
         return parameters;
     }
-
-    public void setParameters(String[] parameters) {
-        this.parameters = parameters;
+    
+    public void addParameter(String param) {
+        parameters.add(param);
     }
     
+    public void removeParameter(int index) {
+        parameters.remove(index);
+    }
     
+    @Override
+    public String toString() {
+        String params = "";
+        for (String s : this.getParameters()) {
+            params += s + " ";
+        }
+        return this.command + " " + params.trim();
+    }
 }
