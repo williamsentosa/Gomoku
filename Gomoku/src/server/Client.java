@@ -76,6 +76,8 @@ public class Client implements Observer {
                     this.users = (ArrayList<User>)resp.getContent();
                     System.out.println(this.users);
                     break;
+                case "error":
+                    System.err.println("ERROR FOUND: " + resp.getContent());
                 default:
                     break;
             }

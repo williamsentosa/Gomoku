@@ -12,12 +12,20 @@ import java.io.Serializable;
  * @author natanelia
  */
 public class Response implements Serializable {
-    public String command;
-    public Object content;
+    private String command;
+    private Object content;
+    private Boolean broadcast;
 
     public Response(String command, Object content) {
         this.command = command;
         this.content = content;
+        this.broadcast = false;
+    }
+    
+    public Response(String command, Object content, Boolean broadcast) {
+        this.command = command;
+        this.content = content;
+        this.broadcast = broadcast;
     }
 
     public void setCommand(String command) {
@@ -34,6 +42,14 @@ public class Response implements Serializable {
 
     public Object getContent() {
         return content;
+    }
+
+    public Boolean isBroadcast() {
+        return broadcast;
+    }
+
+    public void setBroadcast(Boolean broadcast) {
+        this.broadcast = broadcast;
     }
     
     @Override

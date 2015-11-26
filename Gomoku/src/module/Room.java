@@ -8,6 +8,7 @@ package module;
 import game.GomokuGame;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  *
@@ -25,6 +26,7 @@ public class Room implements Serializable {
     private GomokuGame gomokuGame = new GomokuGame();
     private ArrayList<User> users = new ArrayList<>();
     
+    private int turn = 0;
     private int status = IS_WAITING;
     
     public Room(String name) {
@@ -44,7 +46,13 @@ public class Room implements Serializable {
     }
 
     public void setStatus(int status) {
-        this.status = status;
+        if (this.status != status) {
+            if (status == IS_PLAYING) {
+                Random r = new Random();
+                turn = r.nextInt(users.size());
+            }
+            this.status = status;
+        }
     }
     
     public ArrayList<User> getUsers() {
@@ -52,7 +60,9 @@ public class Room implements Serializable {
     }
     
     public void addUser(User user) {
-        users.add(user);
+        if (!users.contains(user)) {
+            users.add(user);
+        }
         if (users.size() >= MINIMUM_PLAYABLE_USER && this.status == IS_WAITING) {
             this.status = IS_PLAYABLE;
         }
@@ -71,6 +81,18 @@ public class Room implements Serializable {
 
     public void setGomokuGame(GomokuGame gomokuGame) {
         this.gomokuGame = gomokuGame;
+    }
+
+    public int getTurn() {
+        return turn;
+    }
+
+    public void setTurn(int turn) {
+        this.turn = turn;
+    }
+    
+    public void nextTurn() {
+        this.turn = (turn + 1) % users.size();
     }
     
     @Override
