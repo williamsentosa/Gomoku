@@ -18,7 +18,7 @@ public class GomokuGame {
     private int[][] board; // Terdiri dari matrix of id pemain.
     
     public GomokuGame() {
-        board = new int [20][20];
+        board = new int [size][size];
         resetBoard();
     }
     
