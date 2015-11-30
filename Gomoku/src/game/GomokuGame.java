@@ -5,13 +5,14 @@
  */
 package game;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * @author William Sentosa
  * Membuat kelas Gomoku game
  */
-public class GomokuGame {
+public class GomokuGame implements Serializable {
     private final int size = 8;
     private final int defaultId = 0; // Isi dari setiap matrix pada awalnya
     private final int threshold = 5;
@@ -36,6 +37,18 @@ public class GomokuGame {
                 board[i][j] = defaultId;
             }
         }
+    }
+    
+    @Override
+    public String toString() {
+        String o = "";
+        for(int i=0; i<size; i++) {
+            for(int j=0; j<size; j++) {
+                o += (board[i][j] + " ");
+            }
+            o += ("\n");
+        }
+        return o;
     }
     
     public void displayBoard() {
