@@ -43,13 +43,11 @@ public class Server implements Runnable
     {
         User user = null;
         try
-        {
-            DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-            Request req = new Request(in.readUTF());            
+        {     
             
             while (true) {
-                in = new DataInputStream(clientSocket.getInputStream());
-                req = new Request(in.readUTF());
+                DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+                Request req = new Request(in.readUTF());
                 Response resp = new Response("error", "unknown");
                 
                 switch (req.getCommand()) {
@@ -180,6 +178,7 @@ public class Server implements Runnable
                                 resp = new Response("get-room", r, true);
                             }
                         }
+                        break;
                     default:
                         resp = new Response("error", "unidentified-request");
                         break;

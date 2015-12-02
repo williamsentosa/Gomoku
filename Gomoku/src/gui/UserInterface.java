@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.net.Socket;
 import javax.swing.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import module.Request;
 import module.Room;
 import module.User;
@@ -207,6 +209,13 @@ public class UserInterface implements Observer {
             Client client = new Client(socket);
             UserInterface userInterface = new UserInterface(client);
             client.addObserver(userInterface);
+            while(true) {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
