@@ -130,15 +130,19 @@ public class Server implements Runnable
                             if (r.getName().equals(roomName)) {
                                 if (r.getStatus() == Room.IS_PLAYING) {
                                     if (user.getId() == r.getTurn()) {
-                                        List<Position> result = r.getGomokuGame().insertToBoard(user.getId() + 1, new Position(row, col));
-                                        r.nextTurn();
+                                        if (r.getGomokuGame().getBoard()[row][col] != GomokuGame.defaultId) {
+                                            List<Position> result = r.getGomokuGame().insertToBoard(user.getId() + 1, new Position(row, col));
+                                            r.nextTurn();
 
-                                        boolean finished = result.size() >= 5;
-                                        if (finished) {
-                                            r.setStatus(Room.IS_WON);
+                                            boolean finished = result.size() >= 5;
+                                            if (finished) {
+                                                r.setStatus(Room.IS_WON);
+                                            }
+
+                                            resp = new Response("get-room", r, true);
+                                        } else {
+                                            resp = new Response("error", "pressed on filled cell");
                                         }
-
-                                        resp = new Response("get-room", r, true);
                                     } else {
                                         resp = new Response("error", "not your turn");
                                     }

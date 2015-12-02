@@ -201,28 +201,12 @@ public class UserInterface implements Observer {
     public static void main(String[] args) {
         String serverName = args[0];
         int port = Integer.parseInt(args[1]);
-        String userName = args[2];
 
         try {
             Socket socket = new Socket(serverName, port);
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-
-            Request req = new Request("login");
-            req.addParameter(userName);
-            out.writeUTF(req.toString());
-
             Client client = new Client(socket);
-
             UserInterface userInterface = new UserInterface(client);
             client.addObserver(userInterface);
-
-            Scanner sc = new Scanner(System.in);
-            while (true) {
-                String s = sc.nextLine();
-
-                out = new DataOutputStream(socket.getOutputStream());
-                out.writeUTF(s);
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
