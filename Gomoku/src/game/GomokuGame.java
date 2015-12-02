@@ -213,18 +213,20 @@ public class GomokuGame implements Serializable {
      */
     public List<Position> insertToBoard(int id, Position p) {
         int i, temp;
-        List<Position> result;
-        board[p.row][p.col] = id;
-        if ( checkVertically(id,p).size() >= 5 ) {
-            result = checkVertically(id,p);
-        } else if ( checkHorizontally(id,p).size() >= 5) {
-            result = checkHorizontally(id,p);
-        } else if ( checkIncreasingDiagonally(id,p).size() >= 5) {
-            result = checkIncreasingDiagonally(id,p);
-        } else if ( checkDecreasingDiagonally(id,p).size() >= 5) {
-            result = checkDecreasingDiagonally(id,p);
-        } else {
-            result = new ArrayList<Position>();
+        List<Position> result = new ArrayList<Position>();
+        if(board[p.row][p.col] == defaultId) {
+            board[p.row][p.col] = id;
+            if ( checkVertically(id,p).size() >= 5 ) {
+                result = checkVertically(id,p);
+            } else if ( checkHorizontally(id,p).size() >= 5) {
+                result = checkHorizontally(id,p);
+            } else if ( checkIncreasingDiagonally(id,p).size() >= 5) {
+                result = checkIncreasingDiagonally(id,p);
+            } else if ( checkDecreasingDiagonally(id,p).size() >= 5) {
+                result = checkDecreasingDiagonally(id,p);
+            } else {
+                result = new ArrayList<Position>();
+            }
         }
         return result;
     }
