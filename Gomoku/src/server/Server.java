@@ -217,6 +217,7 @@ public class Server implements Runnable
             
             while (true) {
                 Socket clientSocket = serverSocket.accept();
+                clientSocket.setSoTimeout(30*60*60);
                 clientSockets.add(clientSocket);
                 new Thread(new Server(clientSocket, clientSockets)).start();
             }

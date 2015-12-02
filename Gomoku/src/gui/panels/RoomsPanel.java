@@ -6,19 +6,15 @@
 package gui.panels;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -26,7 +22,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
@@ -135,6 +130,7 @@ public class RoomsPanel extends JPanel {
             btnRooms[i].setBackground(Color.decode("#f7fafc"));
             btnRooms[i].setBorder(BorderFactory.createLineBorder(Color.decode("#9bb6cc"), 3));
             btnRooms[i].setForeground(Color.decode("#2a4d69"));
+            btnRooms[i].putClientProperty("roomName", rooms.get(i).getName());
             pnlRooms.add(btnRooms[i]);
         }
         

@@ -13,7 +13,7 @@ import java.util.*;
  * Membuat kelas Gomoku game
  */
 public class GomokuGame implements Serializable {
-    private final int size = 8;
+    public static final int size = 20;
     private final int defaultId = 0; // Isi dari setiap matrix pada awalnya
     private final int threshold = 5;
     private int[][] board; // Terdiri dari matrix of id pemain.

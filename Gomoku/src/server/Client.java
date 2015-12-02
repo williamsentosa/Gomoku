@@ -29,7 +29,6 @@ public class Client extends Observable implements Observer  {
     private User me;
     private ArrayList<Room> rooms = new ArrayList<>();
     private ArrayList<User> users = new ArrayList<>();
-    private Room currentRoom;
     private ClientListener clientListener;
     
     public Client(Socket socket) {
@@ -68,6 +67,15 @@ public class Client extends Observable implements Observer  {
         setChanged();
         notifyObservers("update-rooms");
     }
+    
+    public Room getRoom(String name) {
+        for (Room room : rooms) {
+            if (room.getName().equals(name)) {
+                return room;
+            }
+        }
+        return null;
+    }
 
     public User getMe() {
         return me;
@@ -85,17 +93,7 @@ public class Client extends Observable implements Observer  {
     public void setUsers(ArrayList<User> users) {
         this.users = users;
         setChanged();
-        notifyObservers();
-    }
-
-    public Room getCurrentRoom() {
-        return currentRoom;
-    }
-
-    public void setCurrentRoom(Room currentRoom) {
-        this.currentRoom = currentRoom;
-        setChanged();
-        notifyObservers();
+        notifyObservers("update-users");
     }
 
     public ClientListener getClientListener() {
@@ -120,7 +118,7 @@ public class Client extends Observable implements Observer  {
                         i++;
                     }
                     setChanged();
-                    notifyObservers();
+                    notifyObservers("update-rooms");
                     break;
                 case "get-rooms":
                     this.setRooms((ArrayList<Room>)resp.getContent());
