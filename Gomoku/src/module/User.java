@@ -15,18 +15,10 @@ public class User implements Serializable {
     private static int userCount = 0;
     private final int id;
     private String name;
-    private String room;
 
     public User(String name) {
         this.id = userCount++;
         this.name = name;
-        this.room = "";
-    }
-    
-    public User(String name, String room) {
-        this.id = userCount++;
-        this.name = name;
-        this.room = room;
     }
 
     public int getId() {
@@ -39,14 +31,6 @@ public class User implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getRoom() {
-        return room;
-    }
-
-    public void setRoom(String room) {
-        this.room = room;
     }
 
     public static int getUserCount() {

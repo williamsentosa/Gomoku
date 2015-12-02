@@ -23,6 +23,14 @@ import module.User;
 public class ClientListener extends Observable implements Runnable {
     private Socket socket;
     private User user;
+
+    public ClientListener(Socket socket) {
+        this.socket = socket;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
     
     public ClientListener(Socket serverSocket, User user) {
         this.socket = serverSocket;
@@ -37,21 +45,6 @@ public class ClientListener extends Observable implements Runnable {
                 Response resp = (Response)in.readObject();
                 setChanged();
                 this.notifyObservers(resp);
-//                switch (resp.getCommand()) {
-//                    case "get-gomoku":
-//                        setChanged();
-//                        this.notifyObservers(resp);
-//                        break;
-//                    case "get-rooms":
-//                        this.notifyObservers(resp);
-//                        break;
-//                    case "get-users":
-//                        this.notifyObservers(resp);
-//                        break;
-//                    default:
-//                        this.notifyObservers(resp);
-//                        break;
-//                }
             } catch (ClassNotFoundException | IOException e) {
                 Logger.getLogger(ClientListener.class.getName()).log(Level.SEVERE, null, e);
 

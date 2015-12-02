@@ -45,23 +45,21 @@ public class Server implements Runnable
         try
         {
             DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-            Request req = new Request(in.readUTF());
-            
-            user = new User(req.getParameters().get(0));
-            users.add(user);
-            System.out.println(user.getName() + " connected.\nCurrent Active Players: " + users.size());
-            
-            Response resp = new Response("login", user);
-            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-            out.writeObject(resp);
-            
+            Request req = new Request(in.readUTF());            
             
             while (true) {
                 in = new DataInputStream(clientSocket.getInputStream());
                 req = new Request(in.readUTF());
-                resp = new Response("error", "unknown");
+                Response resp = new Response("error", "unknown");
                 
                 switch (req.getCommand()) {
+                    case "login":
+                        user = new User(req.getParameters().get(0));
+                        users.add(user);
+                        System.out.println(user.getName() + " connected.\nCurrent Active Players: " + users.size());
+
+                        resp = new Response("login", user);
+                        break;
                     case "create-room":
                         String roomName = req.getParameters().get(0);
                         
@@ -80,7 +78,6 @@ public class Server implements Runnable
                         } else {
                             resp = new Response("error", "room with same name is exist");
                         }
-                        
                         
                         break;
                     case "join-room":
@@ -152,6 +149,9 @@ public class Server implements Runnable
                             }
                         }
                         break;
+                    case "get-rooms":
+                        resp = new Response("get-rooms", rooms);
+                        break;
                     case "get-room":
                         String roomToGet = req.getParameters().get(0);
                         resp = new Response("error", "room not found");
@@ -160,6 +160,9 @@ public class Server implements Runnable
                                 resp = new Response("get-room", r);
                             }
                         }
+                        break;
+                    case "get-users":
+                        resp = new Response("get-users", users);
                         break;
                     case "chat":
                         String roomToChat = req.getParameters().get(0);
@@ -178,6 +181,7 @@ public class Server implements Runnable
                         break;
                 }
                 
+                ObjectOutputStream out;
                 if (!resp.isBroadcast()) {
                     out = new ObjectOutputStream(clientSocket.getOutputStream());
                     out.writeObject(resp);

@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import module.Request;
 import module.Response;
 import module.Room;
@@ -22,15 +24,39 @@ import module.User;
  *
  * @author natanelia
  */
-public class Client implements Observer {
+public class Client extends Observable implements Observer  {
+    private Socket socket;
+    private User me;
     private ArrayList<Room> rooms = new ArrayList<>();
     private ArrayList<User> users = new ArrayList<>();
     private Room currentRoom;
     private ClientListener clientListener;
-
-    public Client(ClientListener clientListener) {
-        this.clientListener = clientListener;
+    
+    public Client(Socket socket) {
+        this.clientListener = new ClientListener(socket);
+        this.clientListener.addObserver(this);
+        
+        this.socket = socket;
         (new Thread(this.clientListener)).start();
+    }
+
+    public Client(Socket socket, User me) {
+        this.clientListener = new ClientListener(socket, me);
+        this.clientListener.addObserver(this);
+        
+        this.socket = socket;
+        this.me = me;
+        (new Thread(this.clientListener)).start();
+    }
+    
+    public void sendCommand(String cmdLine) {
+        DataOutputStream out;
+        try {
+            out = new DataOutputStream(socket.getOutputStream());
+            out.writeUTF(cmdLine);
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public ArrayList<Room> getRooms() {
@@ -39,6 +65,17 @@ public class Client implements Observer {
 
     public void setRooms(ArrayList<Room> rooms) {
         this.rooms = rooms;
+        setChanged();
+        notifyObservers("update-rooms");
+    }
+
+    public User getMe() {
+        return me;
+    }
+
+    public void setMe(User me) {
+        clientListener.setUser(me);
+        this.me = me;
     }
 
     public ArrayList<User> getUsers() {
@@ -47,6 +84,8 @@ public class Client implements Observer {
 
     public void setUsers(ArrayList<User> users) {
         this.users = users;
+        setChanged();
+        notifyObservers();
     }
 
     public Room getCurrentRoom() {
@@ -55,6 +94,8 @@ public class Client implements Observer {
 
     public void setCurrentRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
+        setChanged();
+        notifyObservers();
     }
 
     public ClientListener getClientListener() {
@@ -78,13 +119,15 @@ public class Client implements Observer {
                         }
                         i++;
                     }
+                    setChanged();
+                    notifyObservers();
                     break;
                 case "get-rooms":
-                    this.rooms = (ArrayList<Room>)resp.getContent();
+                    this.setRooms((ArrayList<Room>)resp.getContent());
                     System.out.println(this.rooms);
                     break;
                 case "get-users":
-                    this.users = (ArrayList<User>)resp.getContent();
+                    this.setUsers((ArrayList<User>)resp.getContent());
                     System.out.println(this.users);
                     break;
                 case "error":
@@ -96,36 +139,32 @@ public class Client implements Observer {
     }
     
     public static void main(String [] args)
-      {
-         String serverName = args[0];
-         int port = Integer.parseInt(args[1]);
-         String userName = args[2];
-         
+    {
+        String serverName = args[0];
+        int port = Integer.parseInt(args[1]);
+        String userName = args[2];
 
-         try
-         {
-               Socket socket = new Socket(serverName, port);
-               DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+        try
+        {
+            Socket socket = new Socket(serverName, port);
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
-               Request req = new Request("login");
-               req.addParameter(userName);
-               System.out.println(req.toString());
-               out.writeUTF(req.toString());
+            Request req = new Request("login");
+            req.addParameter(userName);
+            System.out.println(req.toString());
+            out.writeUTF(req.toString());
 
-               ClientListener clientListener = new ClientListener(socket, new User(userName));
-               Client client = new Client(clientListener);
-               
-               clientListener.addObserver(client);
+            Client client = new Client(socket, new User(userName));
 
-               Scanner sc = new Scanner(System.in);
-               while (true) {
-                   String s = sc.nextLine();
-                   
-                   out = new DataOutputStream(socket.getOutputStream());
-                   out.writeUTF(s);
-               }
-         } catch(IOException e) {
+            Scanner sc = new Scanner(System.in);
+            while (true) {
+                String s = sc.nextLine();
 
-         }
-      }
+                out = new DataOutputStream(socket.getOutputStream());
+                out.writeUTF(s);
+            }
+        } catch(IOException e) {
+
+        }
+    }
 }
