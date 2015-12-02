@@ -25,6 +25,7 @@ public class Room implements Serializable {
     private String name;
     private GomokuGame gomokuGame = new GomokuGame();
     private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<Chat> chats = new ArrayList<>();
     
     private int turn = 0;
     private int status = IS_WAITING;
@@ -73,6 +74,31 @@ public class Room implements Serializable {
         if (users.size() < MINIMUM_PLAYABLE_USER && this.status == IS_PLAYABLE) {
             this.status = IS_WAITING;
         }
+    }
+    
+    public void addChat(Chat chat) {
+        if (users.contains(chat.getUser())) {
+            chats.add(chat);
+        }
+    }
+    
+    public void removeChat(Chat chat) {
+        chats.remove(chat);
+    }
+    
+    public void getChatText() {
+        String r = "";
+        for (Chat chat : chats) {
+            r += "\n" + chat.toString();
+        }
+    }
+
+    public ArrayList<Chat> getChats() {
+        return chats;
+    }
+
+    public void setChats(ArrayList<Chat> chats) {
+        this.chats = chats;
     }
 
     public GomokuGame getGomokuGame() {
