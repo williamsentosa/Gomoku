@@ -128,7 +128,7 @@ public class Server implements Runnable
                             if (r.getName().equals(roomName)) {
                                 if (r.getStatus() == Room.IS_PLAYING) {
                                     if (user.getId() == r.getTurn()) {
-                                        if (r.getGomokuGame().getBoard()[row][col] != GomokuGame.defaultId) {
+                                        if (r.getGomokuGame().getBoard()[row][col] == GomokuGame.defaultId) {
                                             List<Position> result = r.getGomokuGame().insertToBoard(user.getId() + 1, new Position(row, col));
                                             r.nextTurn();
 
