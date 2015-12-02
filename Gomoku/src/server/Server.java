@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import module.Chat;
 import module.Request;
 import module.Response;
 import module.Room;
@@ -117,7 +118,7 @@ public class Server implements Runnable
                             if (r.getName().equals(roomToExit)) {
                                 r.removeUser(user);
                                 
-                                resp = new Response("get-rooms", rooms, true);
+                                resp = new Response("get-rooms", r, true);
                                 break;
                             }
                         }
@@ -126,35 +127,53 @@ public class Server implements Runnable
                         roomName = req.getParameters().get(0);
                         int row = Integer.parseInt(req.getParameters().get(1));
                         int col = Integer.parseInt(req.getParameters().get(2));
+                        
+                        resp = new Response("error", "room not found");
                         for (Room r : rooms) {
                             if (r.getName().equals(roomName)) {
-                                if (user.getId() == r.getTurn()) {
-                                    List<Position> result = r.getGomokuGame().insertToBoard(user.getId(), new Position(row, col));
-                                    r.nextTurn();
-                                    
-                                    boolean finished = result.size() >= 5;
-                                    if (finished) {
-                                        r.setStatus(Room.IS_WON);
-                                    }
-                                    
-                                    resp = new Response("get-rooms", rooms, true);
+                                if (r.getStatus() == Room.IS_PLAYING) {
+                                    if (user.getId() == r.getTurn()) {
+                                        List<Position> result = r.getGomokuGame().insertToBoard(user.getId(), new Position(row, col));
+                                        r.nextTurn();
 
-                                    break;
+                                        boolean finished = result.size() >= 5;
+                                        if (finished) {
+                                            r.setStatus(Room.IS_WON);
+                                        }
+
+                                        resp = new Response("get-room", r, true);
+                                    } else {
+                                        resp = new Response("error", "not your turn");
+                                    }
+                                } else {
+                                    resp = new Response("error", "room is not playing");
                                 }
+                                break;
                             }
                         }
                         break;
-                    case "get-board":
+                    case "get-room":
                         String roomToGet = req.getParameters().get(0);
                         resp = new Response("error", "room not found");
                         for (Room r : rooms) {
                             if (r.getName().equals(roomToGet)) {
-                                resp = new Response("get-gomoku", r.getGomokuGame());
+                                resp = new Response("get-room", r);
                             }
                         }
                         break;
-                    default:
+                    case "chat":
+                        String roomToChat = req.getParameters().get(0);
+                        String content = req.getParameters().get(1);
                         
+                        resp = new Response("error", "room not found");
+                        for (Room r : rooms) {
+                            if (r.getName().equals(roomToChat)) {
+                                r.addChat(new Chat(user, content));
+                                
+                                resp = new Response("get-room", r, true);
+                            }
+                        }
+                    default:
                         resp = new Response("error", "unidentified-request");
                         break;
                 }

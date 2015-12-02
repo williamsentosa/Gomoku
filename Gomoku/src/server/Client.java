@@ -66,7 +66,18 @@ public class Client implements Observer {
         if (o == clientListener) {
             Response resp = (Response)arg;
             switch (resp.getCommand()) {
-                case "get-gomoku":
+                case "get-room":
+                    Room room = (Room)resp.getContent();
+                    int i = 0;
+                    for (Room r : this.rooms) {
+                        if (r.getName().equals(room.getName())) {
+                            this.rooms.set(i, room);
+                            
+                            System.out.println(this.rooms);
+                            break;
+                        }
+                        i++;
+                    }
                     break;
                 case "get-rooms":
                     this.rooms = (ArrayList<Room>)resp.getContent();
