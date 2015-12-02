@@ -276,7 +276,7 @@ public class UserInterface implements Observer {
                                                     sendMoveCommand(client.getRoom(roomPanel.getRoomName()).getName(), (int) button.getClientProperty("row"), (int) button.getClientProperty("col"));
                                                     break;
                                                 case Room.IS_PLAYABLE:
-                                                    
+                                                    sendStartRoomCommand(client.getRoom(roomPanel.getRoomName()).getName());
                                             }
                                         }
                                     }

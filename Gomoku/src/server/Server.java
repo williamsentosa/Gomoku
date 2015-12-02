@@ -130,7 +130,7 @@ public class Server implements Runnable
                             if (r.getName().equals(roomName)) {
                                 if (r.getStatus() == Room.IS_PLAYING) {
                                     if (user.getId() == r.getTurn()) {
-                                        List<Position> result = r.getGomokuGame().insertToBoard(user.getId(), new Position(row, col));
+                                        List<Position> result = r.getGomokuGame().insertToBoard(user.getId() + 1, new Position(row, col));
                                         r.nextTurn();
 
                                         boolean finished = result.size() >= 5;

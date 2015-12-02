@@ -132,7 +132,6 @@ public class RoomPanel extends JPanel {
     }
     
     public void updateRoom(Room room) {
-        
         pnlBoard.removeAll();
         btnCells = new JButton[width][length]; //Alokasi ukuran btnCells
         
@@ -148,8 +147,8 @@ public class RoomPanel extends JPanel {
                 btnCells[x][y].setBorder(BorderFactory.createLineBorder(Color.decode("#9bb6cc"), 1));
                 btnCells[x][y].setFocusPainted(false);
                 //btnCells[x][y].setContentAreaFilled(false);
-                btnCells[x][y].putClientProperty("row", y);
-                btnCells[x][y].putClientProperty("col", x);
+                btnCells[x][y].putClientProperty("row", x);
+                btnCells[x][y].putClientProperty("col", y);
                 pnlBoard.add(btnCells[x][y]); //Menambah JButton ke btnCells
             }
         }
