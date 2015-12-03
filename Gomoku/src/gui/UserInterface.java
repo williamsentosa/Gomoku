@@ -165,7 +165,7 @@ public class UserInterface implements Observer {
     }
 
     public void playGame(String roomName) {
-        roomPanel = new RoomPanel(roomName);
+        roomPanel = new RoomPanel(roomName, client.getMe());
         
         if (roomPanel.btnCells != null) {
             for (JButton[] btnRow : roomPanel.btnCells) {
