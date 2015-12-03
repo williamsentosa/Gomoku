@@ -214,13 +214,13 @@ public class Server implements Runnable
         ServerSocket serverSocket;
         try {
             serverSocket = new ServerSocket(port);
-            serverSocket.setSoTimeout(30*60*60);
+            serverSocket.setSoTimeout(30*60*60*1000);
             
             ArrayList<Socket> clientSockets = new ArrayList<>();
             
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                clientSocket.setSoTimeout(30*60*60);
+                clientSocket.setSoTimeout(30*60*60*1000);
                 clientSockets.add(clientSocket);
                 new Thread(new Server(clientSocket, clientSockets)).start();
             }
