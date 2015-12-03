@@ -198,11 +198,19 @@ public class Server implements Runnable
         } catch(SocketTimeoutException s) {
             System.out.println("Socket timed out!");
         } catch(IOException e) {
+            e.printStackTrace();
             if (user != null) {
                 users.remove(user);
+                allSockets.remove(clientSocket);
+                try {
+                    clientSocket.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
                 System.out.println(user.getName() + " disconnected.\nCurrent Active Players: " + users.size());
             } else {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }
