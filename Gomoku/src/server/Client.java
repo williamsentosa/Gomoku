@@ -145,6 +145,7 @@ public class Client extends Observable implements Observer  {
         try
         {
             Socket socket = new Socket(serverName, port);
+            socket.setSoTimeout(30*60*60*1000);
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
             Request req = new Request("login");

@@ -77,14 +77,18 @@ public class RoomPanel extends JPanel {
         pnlInfo.setPreferredSize(new Dimension(700, 730));
         pnlBoard.setMaximumSize(new Dimension(700, 730));
         pnlBoard.setMinimumSize(new Dimension(700, 730));
-        pnlInfo.setLayout(new GridLayout(3, 1));
+        pnlInfo.setLayout(new GridLayout(4, 1));
         ImageIcon icon = createImageIcon("Household-Room-icon-2.png", "Room Logo");
 
         JLabel roomNameLabel = new JLabel("  " + roomName, icon, JLabel.CENTER);
-        roomNameLabel.setFont(new Font("Roboto", Font.PLAIN, 50));
+        roomNameLabel.setFont(new Font("Roboto", Font.PLAIN, 30));
         roomNameLabel.setForeground(Color.decode("#2a4d69"));
         //roomNameLabel.setHorizontalAlignment(JLabel.CENTER);
+        pnlInfo.setPreferredSize(new Dimension(600, 500));
+        pnlBoard.setMaximumSize(new Dimension(600, 500));
+        pnlBoard.setMinimumSize(new Dimension(600, 500));
         pnlInfo.add(roomNameLabel);
+        pnlInfo.add(new JLabel("Player 1's turn"));
         pnlInfo.add(pnlPlayers);
         pnlChat.setBackground(Color.decode(backgroundColor));
         pnlInfo.add(pnlChat);
