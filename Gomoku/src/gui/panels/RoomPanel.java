@@ -60,11 +60,12 @@ public class RoomPanel extends JPanel {
     private User user;
     public JPanel pnlChat = new JPanel();
     
-    public RoomPanel(String roomName, User user) {
+    public RoomPanel(String roomName) {
         this.roomName = roomName;
         this.width = GomokuGame.size;
         this.length = GomokuGame.size;
         this.setLayout(new FlowLayout(FlowLayout.CENTER)); //Set layout
+        this.setBackground(Color.decode(backgroundColor));
         
         // Board Panel
         pnlBoard.setLayout(new GridLayout(width, length));
@@ -137,7 +138,7 @@ public class RoomPanel extends JPanel {
         return r;
     }
     
-    public void updateRoom(Room room) {
+    public void updateRoom(Room room, User user) {
         pnlBoard.removeAll();
         btnCells = new JButton[width][length]; //Alokasi ukuran btnCells
 
@@ -177,15 +178,19 @@ public class RoomPanel extends JPanel {
         }
         pnlBoard.revalidate();
         pnlBoard.repaint();
-        
-        if (room != null) {
+        try {
           String currentUserTurn = room.getUserOfCurrentTurn().getName();
           if (currentUserTurn.compareTo(user.getName()) == 0) {
             lblTurn.setText("Your turn");
           } else {
             lblTurn.setText(currentUserTurn + "'s turn");
           }
+        } catch (NullPointerException e) {
+            LOG.log(Level.SEVERE, null, e);
         }
+//        } catch (IndexOutOfBoundsException e) {
+//            room.setTurn(room.getUsers().indexOf(user));
+//        }
         
         lblTurn.setFont(new Font("Sniglet", Font.PLAIN, 20));
         lblTurn.setForeground(Color.decode("#2a4d69"));
@@ -202,7 +207,16 @@ public class RoomPanel extends JPanel {
             //lblPlayers[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
             //playerNameLabel.setHorizontalAlignment(JLabel.CENTER);
             lblPlayers[i].setFont(new Font("Sniglet", Font.PLAIN, 20));
-            lblPlayers[i].setForeground(Color.decode("#2a4d69"));
+            try {
+                if (room.getUsers().get(i).getName().compareTo(user.getName()) == 0) {
+                    lblPlayers[i].setForeground(Color.red);
+                } else {
+                    lblPlayers[i].setForeground(Color.decode("#2a4d69"));
+                }
+            } catch (NullPointerException e) {
+                LOG.log(Level.SEVERE, null, e);
+            }
+            
             pnlPlayers.add(lblPlayers[i]);
         }
         pnlPlayers.revalidate();

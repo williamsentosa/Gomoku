@@ -168,7 +168,7 @@ public class UserInterface implements Observer {
     }
 
     public void playGame(String roomName) {
-        roomPanel = new RoomPanel(roomName, client.getMe());
+        roomPanel = new RoomPanel(roomName);
         
         if (roomPanel.btnCells != null) {
             for (JButton[] btnRow : roomPanel.btnCells) {
@@ -264,7 +264,7 @@ public class UserInterface implements Observer {
                     
                     if (roomPanel != null) {
                         Room currentRoom = client.getRoom(roomPanel.getRoomName());
-                        roomPanel.updateRoom(currentRoom);
+                        roomPanel.updateRoom(currentRoom, client.getMe());
                         switch (currentRoom.getStatus()) {
                             case Room.IS_PLAYABLE:
                                 LOG.info("YOU CAN NOW START THE GAME. CLICK THE BOARD ONCE TO START.");

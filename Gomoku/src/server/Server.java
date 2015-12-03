@@ -205,7 +205,16 @@ public class Server implements Runnable
                 boolean foundInRoom = false;
                 for (Room room : rooms) {
                     if (room.getUsers().contains(user)) {
+                        if (room.getUserOfCurrentTurn().getId() == user.getId()) {
+                            room.nextTurn();
+                        }
                         room.getUsers().remove(user);
+                        
+                        if (room.getUsers().size() == 0) {
+                            room.getGomokuGame().resetBoard();
+                            room.setStatus(Room.IS_WAITING);
+                        }
+                        
                         foundInRoom = true;
                     }
                 }
