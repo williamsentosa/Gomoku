@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import module.Chat;
+import module.HighScores;
 import module.Request;
 import module.Response;
 import module.Room;
@@ -26,8 +27,10 @@ import module.User;
  */
 public class Server implements Runnable
 {
+    private static final String fileName = "scores";
     public static ArrayList<User> users = new ArrayList<>();
     public static ArrayList<Room> rooms = new ArrayList<>();
+    public static HighScores highScores = new HighScores(fileName);
     
     private Socket clientSocket;
     private ArrayList<Socket> allSockets;
@@ -179,6 +182,9 @@ public class Server implements Runnable
                                 resp = new Response("get-room", r, true);
                             }
                         }
+                        break;
+                    case "get-high-scores":
+                        resp = new Response("get-high-scores", highScores);
                         break;
                     default:
                         resp = new Response("error", "unidentified-request");

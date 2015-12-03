@@ -14,6 +14,7 @@ import java.util.Observer;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import module.HighScores;
 import module.Request;
 import module.Response;
 import module.Room;
@@ -25,10 +26,13 @@ import module.User;
  * @author natanelia
  */
 public class Client extends Observable implements Observer  {
+    private final String fileName = "scores";
     private Socket socket;
     private User me;
     private ArrayList<Room> rooms = new ArrayList<>();
     private ArrayList<User> users = new ArrayList<>();
+    private HighScores highScores = new HighScores(fileName);
+    private Room currentRoom;
     private ClientListener clientListener;
     
     public Client(Socket socket) {
@@ -100,6 +104,13 @@ public class Client extends Observable implements Observer  {
         notifyObservers("update-users");
     }
 
+    
+    public void setHighScores(HighScores hs) {
+        highScores = hs;
+        setChanged();
+        notifyObservers();
+    }
+    
     public ClientListener getClientListener() {
         return clientListener;
     }
@@ -131,6 +142,10 @@ public class Client extends Observable implements Observer  {
                 case "get-users":
                     this.setUsers((ArrayList<User>)resp.getContent());
                     System.out.println(this.users);
+                    break;
+                case "get-high-scores":
+                    this.setHighScores((HighScores)resp.getContent());
+                    System.out.println(this.highScores);
                     break;
                 case "error":
                     System.err.println("ERROR FOUND: " + resp.getContent());
