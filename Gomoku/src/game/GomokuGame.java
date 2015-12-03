@@ -13,10 +13,11 @@ import java.util.*;
  * Membuat kelas Gomoku game
  */
 public class GomokuGame implements Serializable {
-    private final int size = 8;
-    private final int defaultId = 0; // Isi dari setiap matrix pada awalnya
-    private final int threshold = 5;
+    public static final int size = 20;
+    public static final int defaultId = 0; // Isi dari setiap matrix pada awalnya
+    public static final int threshold = 5;
     private int[][] board; // Terdiri dari matrix of id pemain.
+    private Position lastMove;
     
     public GomokuGame() {
         board = new int [size][size];
@@ -216,6 +217,7 @@ public class GomokuGame implements Serializable {
         List<Position> result = new ArrayList<Position>();
         if(board[p.row][p.col] == defaultId) {
             board[p.row][p.col] = id;
+            lastMove = p;
             if ( checkVertically(id,p).size() >= 5 ) {
                 result = checkVertically(id,p);
             } else if ( checkHorizontally(id,p).size() >= 5) {
@@ -226,6 +228,23 @@ public class GomokuGame implements Serializable {
                 result = checkDecreasingDiagonally(id,p);
             } else {
                 result = new ArrayList<Position>();
+            }
+        }
+        return result;
+    }
+    
+    public List<Position> checkWin(int id) {
+        Position p = lastMove;
+        List<Position> result = new ArrayList<Position>();
+        if(board[p.row][p.col] == defaultId) {
+            if ( checkVertically(id,p).size() >= 5 ) {
+                result = checkVertically(id,p);
+            } else if ( checkHorizontally(id,p).size() >= 5) {
+                result = checkHorizontally(id,p);
+            } else if ( checkIncreasingDiagonally(id,p).size() >= 5) {
+                result = checkIncreasingDiagonally(id,p);
+            } else if ( checkDecreasingDiagonally(id,p).size() >= 5) {
+                result = checkDecreasingDiagonally(id,p);
             }
         }
         return result;

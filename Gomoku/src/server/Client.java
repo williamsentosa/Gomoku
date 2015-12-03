@@ -14,7 +14,6 @@ import java.util.Observer;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import module.HighScores;
 import module.Request;
 import module.Response;
 import module.Room;
@@ -26,13 +25,10 @@ import module.User;
  * @author natanelia
  */
 public class Client extends Observable implements Observer  {
-    private final String fileName = "scores";
     private Socket socket;
     private User me;
     private ArrayList<Room> rooms = new ArrayList<>();
     private ArrayList<User> users = new ArrayList<>();
-    private HighScores highScores = new HighScores(fileName);
-    private Room currentRoom;
     private ClientListener clientListener;
     
     public Client(Socket socket) {
@@ -50,6 +46,10 @@ public class Client extends Observable implements Observer  {
         this.socket = socket;
         this.me = me;
         (new Thread(this.clientListener)).start();
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
     
     public void sendCommand(String cmdLine) {
@@ -71,6 +71,15 @@ public class Client extends Observable implements Observer  {
         setChanged();
         notifyObservers("update-rooms");
     }
+    
+    public Room getRoom(String name) {
+        for (Room room : rooms) {
+            if (room.getName().equals(name)) {
+                return room;
+            }
+        }
+        return null;
+    }
 
     public User getMe() {
         return me;
@@ -88,25 +97,9 @@ public class Client extends Observable implements Observer  {
     public void setUsers(ArrayList<User> users) {
         this.users = users;
         setChanged();
-        notifyObservers();
-    }
-    
-    public Room getCurrentRoom() {
-        return currentRoom;
+        notifyObservers("update-users");
     }
 
-    public void setCurrentRoom(Room currentRoom) {
-        this.currentRoom = currentRoom;
-        setChanged();
-        notifyObservers();
-    }
-    
-    public void setHighScores(HighScores hs) {
-        highScores = hs;
-        setChanged();
-        notifyObservers();
-    }
-    
     public ClientListener getClientListener() {
         return clientListener;
     }
@@ -129,7 +122,7 @@ public class Client extends Observable implements Observer  {
                         i++;
                     }
                     setChanged();
-                    notifyObservers();
+                    notifyObservers("update-rooms");
                     break;
                 case "get-rooms":
                     this.setRooms((ArrayList<Room>)resp.getContent());
@@ -138,10 +131,6 @@ public class Client extends Observable implements Observer  {
                 case "get-users":
                     this.setUsers((ArrayList<User>)resp.getContent());
                     System.out.println(this.users);
-                    break;
-                case "get-high-scores":
-                    this.setHighScores((HighScores)resp.getContent());
-                    System.out.println(this.highScores);
                     break;
                 case "error":
                     System.err.println("ERROR FOUND: " + resp.getContent());
@@ -153,17 +142,14 @@ public class Client extends Observable implements Observer  {
     
     public static void main(String [] args)
     {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Server name : ");
-        String serverName = sc.nextLine();
-        System.out.print("Input port : ");
-        int port = Integer.parseInt(sc.nextLine());
-        System.out.print("Username : ");
-        String userName = sc.nextLine();
+        String serverName = args[0];
+        int port = Integer.parseInt(args[1]);
+        String userName = args[2];
 
         try
         {
             Socket socket = new Socket(serverName, port);
+            socket.setSoTimeout(30*60*60*1000);
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
             Request req = new Request("login");
@@ -173,6 +159,7 @@ public class Client extends Observable implements Observer  {
 
             Client client = new Client(socket, new User(userName));
 
+            Scanner sc = new Scanner(System.in);
             while (true) {
                 String s = sc.nextLine();
 
