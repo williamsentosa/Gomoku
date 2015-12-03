@@ -127,14 +127,15 @@ public class Server implements Runnable
                         for (Room r : rooms) {
                             if (r.getName().equals(roomName)) {
                                 if (r.getStatus() == Room.IS_PLAYING) {
-                                    if (user.getId() == r.getTurn()) {
+                                    if (user.equals(r.getUserOfCurrentTurn())) {
                                         if (r.getGomokuGame().getBoard()[row][col] == GomokuGame.defaultId) {
-                                            List<Position> result = r.getGomokuGame().insertToBoard(user.getId() + 1, new Position(row, col));
-                                            r.nextTurn();
+                                            List<Position> result = r.getGomokuGame().insertToBoard(r.getTurn() + 1, new Position(row, col));
 
                                             boolean finished = result.size() >= 5;
                                             if (finished) {
                                                 r.setStatus(Room.IS_WON);
+                                            } else {
+                                                r.nextTurn();
                                             }
 
                                             resp = new Response("get-room", r, true);
@@ -198,9 +199,39 @@ public class Server implements Runnable
         } catch(SocketTimeoutException s) {
             System.out.println("Socket timed out!");
         } catch(IOException e) {
-            e.printStackTrace();
             if (user != null) {
                 users.remove(user);
+                
+                boolean foundInRoom = false;
+                for (Room room : rooms) {
+                    if (room.getUsers().contains(user)) {
+                        room.getUsers().remove(user);
+                        foundInRoom = true;
+                    }
+                }
+                
+                if (foundInRoom) {
+                    Response resp = new Response("get-rooms", rooms, true);
+                    for (Socket socket : allSockets) {
+                        try {
+                            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                            out.writeObject(resp);
+                        } catch (IOException ex) {
+                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+                
+                Response resp = new Response("get-users", users, true);
+                for (Socket socket : allSockets) {
+                    try {
+                        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+                        out.writeObject(resp);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                
                 allSockets.remove(clientSocket);
                 try {
                     clientSocket.close();

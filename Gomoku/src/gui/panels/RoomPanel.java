@@ -6,6 +6,7 @@
 package gui.panels;
 
 import game.GomokuGame;
+import game.Position;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -26,14 +27,17 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import module.Room;
+import module.User;
 
 /**
  *
  * @author natanelia
  */
 public class RoomPanel extends JPanel {
+    private static final Logger LOG = Logger.getLogger(RoomPanel.class.getName());
     private static final String backgroundColor = "#f0f5f9";
     private static final ArrayList<String> symbols = new ArrayList<String>(Arrays.asList(new String[]{"", "■", "▲", "●", "◆", "❤", "★", "✱", "▼", "♣", "♠"}));
     private int width;
@@ -130,7 +134,7 @@ public class RoomPanel extends JPanel {
         try {
             r = new ImageIcon(ImageIO.read(input));
         } catch (IOException ex) {
-            Logger.getLogger(RoomsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
         return r;
     }
@@ -138,6 +142,8 @@ public class RoomPanel extends JPanel {
     public void updateRoom(Room room) {
         pnlBoard.removeAll();
         btnCells = new JButton[width][length]; //Alokasi ukuran btnCells
+
+        LOG.info("UPDATE ROOM CALLED");
         
         int[][] board = room.getGomokuGame().getBoard();
         for (int y = 0; y < length; y++) {
@@ -156,9 +162,23 @@ public class RoomPanel extends JPanel {
                 pnlBoard.add(btnCells[x][y]); //Menambah JButton ke btnCells
             }
         }
+        
+        switch(room.getStatus()) {
+            case Room.IS_WON:
+                User currentTurnUser = room.getUserOfCurrentTurn();
+                for (Position p : room.getGomokuGame().checkWin(room.getTurn())) {
+                    btnCells[p.row][p.col].setBorder(BorderFactory.createLineBorder(Color.decode("#00ff00"), 1));
+                    btnCells[p.row][p.col].revalidate();
+                    btnCells[p.row][p.col].repaint();
+                }
+                
+                String msg = "THE GAME HAS BEEN WON by " + currentTurnUser.getName() + "!";
+                LOG.info(msg);
+                JOptionPane.showMessageDialog(this, msg, room.getName(), JOptionPane.INFORMATION_MESSAGE);
+                break;
+        }
         pnlBoard.revalidate();
         pnlBoard.repaint();
-        
         
         pnlPlayers.removeAll();
         lblPlayers = new JLabel[room.getUsers().size()];

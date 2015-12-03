@@ -5,6 +5,7 @@
  */
 package gui;
 
+import game.Position;
 import gui.panels.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -27,7 +28,9 @@ import server.Client;
  */
 public class UserInterface implements Observer {
 
-    JFrame frame; // Membuat frame
+    private static final Logger LOG = Logger.getLogger(UserInterface.class.getName());
+
+    MainFrame frame; // Membuat frame
     LoginPanel loginPanel;
     RoomsPanel roomsPanel;
     RoomPanel roomPanel;
@@ -37,7 +40,7 @@ public class UserInterface implements Observer {
     Client client;
 
     public UserInterface() {
-        frame = new JFrame("Gomoku"); // Membuat frame
+        frame = new MainFrame("Gomoku"); // Membuat frame
         login();
         frame.pack();
         frame.getContentPane().setBackground(Color.white);
@@ -49,7 +52,7 @@ public class UserInterface implements Observer {
     public UserInterface(server.Client client) {
         this.client = client;
 
-        frame = new JFrame("Gomoku"); // Membuat frame
+        frame = new MainFrame("Gomoku"); // Membuat frame
         login();
         frame.pack();
         frame.getContentPane().setBackground(Color.white);
@@ -213,7 +216,7 @@ public class UserInterface implements Observer {
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.log(Level.SEVERE, null, ex);
                 }
             }
         } catch (IOException e) {
@@ -253,8 +256,23 @@ public class UserInterface implements Observer {
                         }
                     }
 
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
                     if (roomPanel != null) {
-                        roomPanel.updateRoom(client.getRoom(roomPanel.getRoomName()));
+                        Room currentRoom = client.getRoom(roomPanel.getRoomName());
+                        roomPanel.updateRoom(currentRoom);
+                        switch (currentRoom.getStatus()) {
+                            case Room.IS_PLAYABLE:
+                                LOG.info("YOU CAN NOW START THE GAME. CLICK THE BOARD ONCE TO START.");
+//                                if (JOptionPane.showConfirmDialog(roomPanel, "The game can now be started. Start now?", currentRoom.getName(), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+//                                    sendStartRoomCommand(currentRoom.getName());
+//                                }
+                                break;
+                        }
                         
                         for (JButton[] btnRow : roomPanel.btnCells) {
                             for (JButton btnCell : btnRow) {
@@ -263,13 +281,13 @@ public class UserInterface implements Observer {
                                     public void actionPerformed(ActionEvent e) {
                                         Object source = e.getSource();
                                         if (source instanceof Component) {
-                                            switch (client.getRoom(roomPanel.getRoomName()).getStatus()) {
+                                            switch (currentRoom.getStatus()) {
                                                 case Room.IS_PLAYING:
                                                     JButton button = (JButton) source;
-                                                    sendMoveCommand(client.getRoom(roomPanel.getRoomName()).getName(), (int) button.getClientProperty("row"), (int) button.getClientProperty("col"));
+                                                    sendMoveCommand(currentRoom.getName(), (int) button.getClientProperty("row"), (int) button.getClientProperty("col"));
                                                     break;
                                                 case Room.IS_PLAYABLE:
-                                                    sendStartRoomCommand(client.getRoom(roomPanel.getRoomName()).getName());
+                                                    sendStartRoomCommand(currentRoom.getName());
                                             }
                                         }
                                     }

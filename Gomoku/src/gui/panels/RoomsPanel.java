@@ -34,6 +34,8 @@ import module.User;
  * @author natanelia
  */
 public class RoomsPanel extends JPanel {
+
+    private static final Logger LOG = Logger.getLogger(RoomsPanel.class.getName());
     private static final String backgroundColor = "#f0f5f9";
 
     public JButton[] btnRooms;
@@ -108,7 +110,7 @@ public class RoomsPanel extends JPanel {
         try {
             r = new ImageIcon(ImageIO.read(input));
         } catch (IOException ex) {
-            Logger.getLogger(RoomsPanel.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
         return r;
     }

@@ -47,6 +47,10 @@ public class Client extends Observable implements Observer  {
         this.me = me;
         (new Thread(this.clientListener)).start();
     }
+
+    public Socket getSocket() {
+        return socket;
+    }
     
     public void sendCommand(String cmdLine) {
         DataOutputStream out;
