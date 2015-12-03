@@ -10,6 +10,7 @@ import game.Position;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -24,8 +25,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -50,25 +53,22 @@ public class RoomPanel extends JPanel {
     public JButton[][] btnCells;
     
     public JPanel pnlInfo = new JPanel(); //Panel untuk nama room dan info player
-    
+    public JPanel pnlRightSide = new JPanel();
     public JPanel pnlPlayers = new JPanel(); // Panel untuk nama setiap player
     public JLabel[] lblPlayers;
-    
+    public JLabel lblTurn;
+    private User user;
     public JPanel pnlChat = new JPanel();
     
-    public RoomPanel(String roomName) {
+    public RoomPanel(String roomName, User user) {
         this.roomName = roomName;
         this.width = GomokuGame.size;
         this.length = GomokuGame.size;
+        this.setLayout(new FlowLayout(FlowLayout.CENTER)); //Set layout
         
-        this.setLayout(new GridBagLayout()); //Set layout
-        GridBagConstraints c = new GridBagConstraints();
-
         // Board Panel
         pnlBoard.setLayout(new GridLayout(width, length));
-        pnlBoard.setPreferredSize(new Dimension(400, 730));
-        pnlBoard.setMaximumSize(new Dimension(400, 730));
-        pnlBoard.setMinimumSize(new Dimension(400, 730));
+        pnlBoard.setPreferredSize(new Dimension(700, 650));
         pnlBoard.setBackground(Color.decode(backgroundColor));
         pnlBoard.setOpaque(true);
 
@@ -76,42 +76,40 @@ public class RoomPanel extends JPanel {
         pnlPlayers.setBackground(Color.decode(backgroundColor));
         
 
-        // Panel2
+        // PanelRightSide
+        pnlRightSide.setLayout(new BoxLayout(pnlRightSide, BoxLayout.Y_AXIS));
+        
+        // PanelInfo
         pnlInfo.setBackground(Color.decode(backgroundColor));
-        pnlInfo.setPreferredSize(new Dimension(700, 730));
-        pnlBoard.setMaximumSize(new Dimension(700, 730));
-        pnlBoard.setMinimumSize(new Dimension(700, 730));
-        pnlInfo.setLayout(new GridLayout(4, 1));
+        pnlInfo.setPreferredSize(new Dimension(400, 325));
+        
+        pnlInfo.setLayout(new BoxLayout(pnlInfo, BoxLayout.Y_AXIS));
         ImageIcon icon = createImageIcon("Household-Room-icon-2.png", "Room Logo");
 
-        JLabel roomNameLabel = new JLabel("  " + roomName, icon, JLabel.CENTER);
+        JLabel roomNameLabel = new JLabel(roomName, icon, JLabel.CENTER);
+        roomNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         roomNameLabel.setFont(new Font("Roboto", Font.PLAIN, 30));
         roomNameLabel.setForeground(Color.decode("#2a4d69"));
         //roomNameLabel.setHorizontalAlignment(JLabel.CENTER);
-        pnlInfo.setPreferredSize(new Dimension(600, 500));
-        pnlBoard.setMaximumSize(new Dimension(600, 500));
-        pnlBoard.setMinimumSize(new Dimension(600, 500));
         pnlInfo.add(roomNameLabel);
-        pnlInfo.add(new JLabel("Player 1's turn"));
+        
+        lblTurn = new JLabel();
+        pnlInfo.add(lblTurn);
         pnlInfo.add(pnlPlayers);
-        pnlChat.setBackground(Color.decode(backgroundColor));
-        pnlInfo.add(pnlChat);
-
-        // Add pnlBoard and pnlInfo to JFrame
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 0.7;
-        c.weighty = 1;
-        c.fill = GridBagConstraints.BOTH;
-        //c.anchor = GridBagConstraints.FIRST_LINE_START;
-        this.add(pnlBoard, c);
-        c.gridx = 1000;
-        c.gridy = 0;
-        c.weightx = 0.3;
-        c.weighty = 0.8;
-        c.fill = GridBagConstraints.BOTH;
-        //c.anchor = GridBagConstraints.CENTER;
-        this.add(pnlInfo, c);
+        pnlInfo.setAlignmentX(CENTER_ALIGNMENT);
+        pnlInfo.setAlignmentY(TOP_ALIGNMENT);
+        
+        // pnlChat
+        pnlChat.setBackground(Color.red);
+        pnlChat.setOpaque(true);
+        pnlChat.setPreferredSize(new Dimension(400,325));
+        
+        
+        pnlRightSide.add(pnlInfo);
+        pnlRightSide.add(pnlChat);
+        // Add pnlBoard and pnlRightSide to JFrame
+        this.add(pnlBoard);
+        this.add(pnlRightSide);
     }
 
     public String getRoomName() {
@@ -180,15 +178,28 @@ public class RoomPanel extends JPanel {
         pnlBoard.revalidate();
         pnlBoard.repaint();
         
+        if (room != null) {
+          String currentUserTurn = room.getUserOfCurrentTurn().getName();
+          if (currentUserTurn.compareTo(user.getName()) == 0) {
+            lblTurn.setText("Your turn");
+          } else {
+            lblTurn.setText(currentUserTurn + "'s turn");
+          }
+        }
+        
+        lblTurn.setFont(new Font("Sniglet", Font.PLAIN, 20));
+        lblTurn.setForeground(Color.decode("#2a4d69"));
+        lblTurn.setAlignmentY(Component.CENTER_ALIGNMENT);
+        lblTurn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
         pnlPlayers.removeAll();
         lblPlayers = new JLabel[room.getUsers().size()];
         float temp = room.getUsers().size() / 2f;
-
-        pnlPlayers.setLayout(new GridLayout((int) Math.ceil(temp), 2));
+        pnlPlayers.setLayout(new GridLayout((int) Math.ceil(temp), 2, 0, 0));
         for (int i = 0; i < room.getUsers().size(); i++) {
             ImageIcon icon = createImageIcon("Player1.png", "Player Logo");
             lblPlayers[i] = new JLabel(room.getUsers().get(i).getName(), icon, JLabel.LEFT);
-            lblPlayers[i].setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 0));
+            //lblPlayers[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
             //playerNameLabel.setHorizontalAlignment(JLabel.CENTER);
             lblPlayers[i].setFont(new Font("Sniglet", Font.PLAIN, 20));
             lblPlayers[i].setForeground(Color.decode("#2a4d69"));
