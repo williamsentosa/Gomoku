@@ -12,9 +12,11 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import module.Chat;
+import module.HighScores;
 import module.Request;
 import module.Response;
 import module.Room;
@@ -26,8 +28,10 @@ import module.User;
  */
 public class Server implements Runnable
 {
+    private static final String fileName = "scores";
     public static ArrayList<User> users = new ArrayList<>();
     public static ArrayList<Room> rooms = new ArrayList<>();
+    public static HighScores highScores = new HighScores(fileName);
     
     private Socket clientSocket;
     private ArrayList<Socket> allSockets;
@@ -43,11 +47,13 @@ public class Server implements Runnable
     {
         User user = null;
         try
-        {     
+        {
+            DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+            Request req = new Request(in.readUTF());            
             
             while (true) {
-                DataInputStream in = new DataInputStream(clientSocket.getInputStream());
-                Request req = new Request(in.readUTF());
+                in = new DataInputStream(clientSocket.getInputStream());
+                req = new Request(in.readUTF());
                 Response resp = new Response("error", "unknown");
                 
                 switch (req.getCommand()) {
@@ -127,21 +133,19 @@ public class Server implements Runnable
                         for (Room r : rooms) {
                             if (r.getName().equals(roomName)) {
                                 if (r.getStatus() == Room.IS_PLAYING) {
-                                    if (user.equals(r.getUserOfCurrentTurn())) {
-                                        if (r.getGomokuGame().getBoard()[row][col] == GomokuGame.defaultId) {
-                                            List<Position> result = r.getGomokuGame().insertToBoard(r.getTurn() + 1, new Position(row, col));
+                                    if (user.getId() == r.getTurn()) {
+                                        List<Position> result = r.getGomokuGame().insertToBoard(user.getId(), new Position(row, col));
+                                        r.nextTurn();
 
-                                            boolean finished = result.size() >= 5;
-                                            if (finished) {
-                                                r.setStatus(Room.IS_WON);
-                                            } else {
-                                                r.nextTurn();
-                                            }
-
-                                            resp = new Response("get-room", r, true);
-                                        } else {
-                                            resp = new Response("error", "pressed on filled cell");
+                                        boolean finished = result.size() >= 5;
+                                        if (finished) {
+                                            r.setStatus(Room.IS_WON);
+                                            highScores.addHighScore(user.getName());
+                                            highScores.incrHighScore(user.getName());
+                                            highScores.writeToFile(fileName);
                                         }
+
+                                        resp = new Response("get-room", r, true);
                                     } else {
                                         resp = new Response("error", "not your turn");
                                     }
@@ -180,6 +184,9 @@ public class Server implements Runnable
                             }
                         }
                         break;
+                    case "get-high-scores":
+                        resp = new Response("get-high-scores", highScores);
+                        break;
                     default:
                         resp = new Response("error", "unidentified-request");
                         break;
@@ -201,65 +208,28 @@ public class Server implements Runnable
         } catch(IOException e) {
             if (user != null) {
                 users.remove(user);
-                
-                boolean foundInRoom = false;
-                for (Room room : rooms) {
-                    if (room.getUsers().contains(user)) {
-                        room.getUsers().remove(user);
-                        foundInRoom = true;
-                    }
-                }
-                
-                if (foundInRoom) {
-                    Response resp = new Response("get-rooms", rooms, true);
-                    for (Socket socket : allSockets) {
-                        try {
-                            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-                            out.writeObject(resp);
-                        } catch (IOException ex) {
-                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }
-                
-                Response resp = new Response("get-users", users, true);
-                for (Socket socket : allSockets) {
-                    try {
-                        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-                        out.writeObject(resp);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                
-                allSockets.remove(clientSocket);
-                try {
-                    clientSocket.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                
                 System.out.println(user.getName() + " disconnected.\nCurrent Active Players: " + users.size());
             } else {
-                //e.printStackTrace();
+                e.printStackTrace();
             }
         }
     }
    
     public static void main(String [] args)
     {
-        int port = Integer.parseInt(args[0]);
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Input port : ");
+        int port = sc.nextInt();
 
         ServerSocket serverSocket;
         try {
             serverSocket = new ServerSocket(port);
-            serverSocket.setSoTimeout(30*60*60*1000);
+            serverSocket.setSoTimeout(30*60*60);
             
             ArrayList<Socket> clientSockets = new ArrayList<>();
             
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                clientSocket.setSoTimeout(30*60*60*1000);
                 clientSockets.add(clientSocket);
                 new Thread(new Server(clientSocket, clientSockets)).start();
             }

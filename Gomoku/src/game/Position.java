@@ -5,13 +5,11 @@
  */
 package game;
 
-import java.io.Serializable;
-
 /**
  *
  * @author William Sentosa
  */
-public class Position implements Serializable {
+public class Position {
     public int row;
     public int col;
     

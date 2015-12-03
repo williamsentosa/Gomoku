@@ -121,12 +121,8 @@ public class Room implements Serializable {
         this.turn = (turn + 1) % users.size();
     }
     
-    public User getUserOfCurrentTurn() {
-        return users.get(turn);
-    }
-    
     @Override
     public String toString() {
-        return name + " " + status + " " + turn + ", " + gomokuGame + " " + users;
+        return name + " " + status + ", " + gomokuGame + " " + users;
     }
 }
