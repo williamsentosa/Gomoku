@@ -69,7 +69,11 @@ public class Client extends Observable implements Observer  {
     public ArrayList<Room> getRooms() {
         return rooms;
     }
-
+    
+    public HighScores getHighScores() {
+        return highScores;
+    }
+    
     public void setRooms(ArrayList<Room> rooms) {
         this.rooms = rooms;
         setChanged();
@@ -146,6 +150,7 @@ public class Client extends Observable implements Observer  {
                 case "get-high-scores":
                     this.setHighScores((HighScores)resp.getContent());
                     System.out.println(this.highScores);
+                    notifyObservers("update-high-scores");
                     break;
                 case "error":
                     setChanged();
