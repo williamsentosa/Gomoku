@@ -256,7 +256,7 @@ public class Server implements Runnable
                             ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                             out.writeObject(resp);
                         } catch (IOException ex) {
-                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                            //Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                 }
@@ -267,14 +267,14 @@ public class Server implements Runnable
                         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                         out.writeObject(resp);
                     } catch (IOException ex) {
-                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                        //Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
                 
                 try {
                     clientSocket.close();
                 } catch (IOException ex) {
-                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                    //Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 
                 System.out.println(user.getName() + " disconnected.\nCurrent Active Players: " + users.size());

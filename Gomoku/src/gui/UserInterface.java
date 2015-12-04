@@ -74,7 +74,7 @@ public class UserInterface implements Observer {
     }
     
     public void sendGetRoomsCommand() {
-        client.sendCommand("get-rooms" + "test");
+        client.sendCommand("get-rooms " + "test");
     }
     
     public void sendGetRoomCommand(String roomName) {
@@ -82,7 +82,7 @@ public class UserInterface implements Observer {
     }
     
     public void sendGetUsersCommand() {
-        client.sendCommand("get-users" + "test");
+        client.sendCommand("get-users " + "test");
     }
     
     public void sendCreateRoomCommand(String roomName) {
@@ -110,7 +110,7 @@ public class UserInterface implements Observer {
     }
     
     public void sendGetHighScoresCommand() {
-        client.sendCommand("get-high-scores" + "test");
+        client.sendCommand("get-high-scores " + "test");
     }
     
     public void login() {
@@ -214,6 +214,7 @@ public class UserInterface implements Observer {
             public void actionPerformed(ActionEvent e) {
                 Object source = e.getSource();
                 if (source instanceof Component) {
+                    sendGetHighScoresCommand();
                     showHighScores();
                     frame.setContentPane(highScorePanel);
                     frame.invalidate();
@@ -228,21 +229,7 @@ public class UserInterface implements Observer {
     }
 
     public void showHighScores() {
-        this.sendGetHighScoresCommand();
         highScorePanel = new HighScorePanel(client.getHighScores());
-        highScorePanel.initComponent();
-        
-        highScorePanel.btnBack.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Object source = e.getSource();
-                if (source instanceof Component) {
-                    frame.setContentPane(roomsPanel);
-                    frame.invalidate();
-                    frame.validate();
-                }
-            }
-        });
     }
     
     public void playGame(String roomName) {
@@ -407,7 +394,24 @@ public class UserInterface implements Observer {
                     }
                     break;
                 case "update-high-scores":
-                    
+                    if (highScorePanel != null) {
+                        System.out.println("LKJLSDKJF");
+                        highScorePanel.initComponent(client.getHighScores());
+
+                        highScorePanel.btnBack.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                Object source = e.getSource();
+                                if (source instanceof Component) {
+                                    frame.setContentPane(roomsPanel);
+                                    frame.invalidate();
+                                    frame.validate();
+                                }
+                            }
+                        });
+                        highScorePanel.revalidate();
+                        highScorePanel.repaint();
+                    }
                     break;
                 default:
                     if (arg.toString().startsWith("error") && roomPanel != null) {

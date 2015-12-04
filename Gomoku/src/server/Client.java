@@ -31,7 +31,7 @@ public class Client extends Observable implements Observer  {
     private User me;
     private ArrayList<Room> rooms = new ArrayList<>();
     private ArrayList<User> users = new ArrayList<>();
-    private HighScores highScores = new HighScores(fileName);
+    private HighScores highScores;
     private Room currentRoom;
     private ClientListener clientListener;
     
@@ -112,7 +112,7 @@ public class Client extends Observable implements Observer  {
     public void setHighScores(HighScores hs) {
         highScores = hs;
         setChanged();
-        notifyObservers();
+        notifyObservers("update-high-scores");
     }
     
     public ClientListener getClientListener() {
@@ -150,7 +150,6 @@ public class Client extends Observable implements Observer  {
                 case "get-high-scores":
                     this.setHighScores((HighScores)resp.getContent());
                     System.out.println(this.highScores);
-                    notifyObservers("update-high-scores");
                     break;
                 case "error":
                     setChanged();

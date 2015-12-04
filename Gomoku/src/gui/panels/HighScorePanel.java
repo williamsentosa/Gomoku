@@ -31,27 +31,15 @@ public class HighScorePanel extends JPanel {
     private String backgroundColor = "#f0f5f9";
     public JButton btnBack;
     
-    public HighScorePanel(String file) {
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));   
-        this.file = file;
-        highScores = new HighScores(file);
-    }
-    
     public HighScorePanel(HighScores hs) {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));   
         this.file = file;
         highScores = hs;
     }
     
-    public void updateComponent() {
-        this.removeAll();
-        highScores = new HighScores(file);
-        initComponent();
-        this.revalidate();
-        this.repaint();
-    }
     
-    public void initComponent() {
+    public void initComponent(HighScores hs) {
+        this.highScores = hs;
         this.setBackground(Color.decode(backgroundColor));
         this.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
@@ -137,28 +125,5 @@ public class HighScorePanel extends JPanel {
 
         add(highScoreTable, c);
         
-    }
-    
-    public void actionPerformed(ActionEvent e) {
-        
-    }
-    
-    public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        JPanel mainPanel = new JPanel();
-        HighScorePanel panel = new HighScorePanel("scores");
-        panel.initComponent();
-        mainPanel.add(panel);
-        JButton button = new JButton("Refreshed");
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                panel.updateComponent();
-            }
-        });
-        mainPanel.add(button);
-        frame.add(mainPanel);
-        frame.setSize(200, 200);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
     }
 }
