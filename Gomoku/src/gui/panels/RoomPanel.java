@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -247,13 +248,16 @@ public class RoomPanel extends JPanel {
         
         switch(room.getStatus()) {
             case Room.IS_WON:
-                Position pos = room.getGomokuGame().checkWin(room.getTurn() + 1).get(0);
-                int id = room.getGomokuGame().getBoard()[pos.row][pos.col] - 1;
-                for (Position p : room.getGomokuGame().checkWin(room.getTurn() + 1)) {
-                    btnCells[p.row][p.col].setBackground(Color.green);
+                List<Position> posx = room.getGomokuGame().checkWin(room.getTurn() + 1);
+                if (posx.size() > 0) {
+                    Position pos = room.getGomokuGame().checkWin(room.getTurn() + 1).get(0);
+                    int id = room.getGomokuGame().getBoard()[pos.row][pos.col] - 1;
+                    for (Position p : room.getGomokuGame().checkWin(room.getTurn() + 1)) {
+                        btnCells[p.row][p.col].setBackground(Color.green);
+                    }
+                    String msg = "THE GAME HAS BEEN WON by " + room.getUsers().get(id).getName() + "!";
+                    LOG.info(msg);
                 }
-                String msg = "THE GAME HAS BEEN WON by " + room.getUsers().get(id).getName() + "!";
-                LOG.info(msg);
                 break;
         }
         

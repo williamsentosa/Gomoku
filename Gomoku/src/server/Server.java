@@ -121,10 +121,12 @@ public class Server implements Runnable
                         }
                         for (Room r : rooms) {
                             if (r.getName().equals(roomToExit)) {
-                                if (r.getUserOfCurrentTurn() != null) {
+                                try {
                                     if (r.getUserOfCurrentTurn().getId() == user.getId()) {
                                         r.nextTurn();
                                     }
+                                } catch (java.lang.IndexOutOfBoundsException e) {
+                                    r.nextTurn();
                                 }
                                 r.removeUser(user);
 

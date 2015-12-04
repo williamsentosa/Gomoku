@@ -400,7 +400,7 @@ public class UserInterface implements Observer {
                     }
                     break;
                 default:
-                    if (arg.toString().startsWith("error")) {
+                    if (arg.toString().startsWith("error") && roomPanel != null) {
                         roomPanel.lblTurn.setText(arg.toString().replaceFirst("error", ""));
                     }
             }
