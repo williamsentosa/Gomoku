@@ -116,7 +116,7 @@ public class Server implements Runnable
                             if (r.getName().equals(roomToExit)) {
                                 r.removeUser(user);
                                 
-                                resp = new Response("get-rooms", r, true);
+                                resp = new Response("get-rooms", rooms, true);
                                 break;
                             }
                         }

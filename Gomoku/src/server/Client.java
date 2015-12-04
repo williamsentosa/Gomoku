@@ -148,6 +148,8 @@ public class Client extends Observable implements Observer  {
                     System.out.println(this.highScores);
                     break;
                 case "error":
+                    setChanged();
+                    notifyObservers("error");
                     System.err.println("ERROR FOUND: " + resp.getContent());
                 default:
                     break;
