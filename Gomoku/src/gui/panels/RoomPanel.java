@@ -255,8 +255,8 @@ public class RoomPanel extends JPanel {
                     for (Position p : room.getGomokuGame().checkWin(room.getTurn() + 1)) {
                         btnCells[p.row][p.col].setBackground(Color.green);
                     }
-                    String msg = "THE GAME HAS BEEN WON by " + room.getUsers().get(id).getName() + "!";
-                    LOG.info(msg);
+                    //String msg = "THE GAME HAS BEEN WON by " + room.getUsers().get(id).getName() + "!";
+                    //LOG.info(msg);
                 }
                 break;
         }
