@@ -41,6 +41,7 @@ public class RoomsPanel extends JPanel {
     public JButton[] btnRooms;
     public JPanel pnlRooms;
     public JButton btnCreateRoom;
+    public JButton btnHighScore;
     
     public RoomsPanel(User user, ArrayList<Room> roomList) {
         super();
@@ -61,6 +62,19 @@ public class RoomsPanel extends JPanel {
         c.insets = new Insets(50, 50, 0, 0);
         c.anchor = GridBagConstraints.FIRST_LINE_START;
         this.add(btnCreateRoom, c);
+        
+        // JButton untuk high score
+        btnHighScore = new JButton("High Score");
+        btnHighScore.setFont(new Font("Sniglet", Font.PLAIN, 25));
+        btnHighScore.setOpaque(true);
+        btnHighScore.setBackground(Color.decode("#2a4d69"));
+        btnHighScore.setForeground(Color.decode("#e7eff6"));
+
+        c.gridx = 1;
+        c.gridy = 0;
+        c.insets = new Insets(50, 50, 0, 0);
+        c.anchor = GridBagConstraints.FIRST_LINE_START;
+        this.add(btnHighScore, c);
 
         // Label untuk menampilkan nama player
         JLabel label = new JLabel("Welcome, " + user.getName() + "!");
