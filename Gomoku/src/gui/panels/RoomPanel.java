@@ -278,7 +278,9 @@ public class RoomPanel extends JPanel {
           }
         } else if (room.getStatus() == Room.IS_WON) {
             try {
-                lblTurn.setText(room.getUserOfCurrentTurn().getName() + " won!");
+                if (lblTurn.getText().endsWith("turn")) {
+                    lblTurn.setText(room.getUserOfCurrentTurn().getName() + " won!");
+                }
             } catch (IndexOutOfBoundsException e) {
                 /* do nothing */
             }
