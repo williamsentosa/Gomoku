@@ -151,7 +151,7 @@ public class UserInterface implements Observer {
                     if (source instanceof Component) {
                         String roomName = (String)btnRoom.getClientProperty("roomName");
                         JDialog dialog = new JDialog();
-                        dialog.setPreferredSize(new Dimension(500,300));
+                        dialog.setPreferredSize(new Dimension(550,300));
                         client.getRoom(roomName);
                         optionPanel = new OptionPanel(client.getRoom(roomName).getUsers());
                         optionPanel.initComponent();
@@ -349,6 +349,7 @@ public class UserInterface implements Observer {
                               roomPanel.btnExit.setEnabled(false);
                               
                               JPanel pnlDialog = new JPanel();
+                              waitingDialog.setBackground(Color.decode(backgroundColor));
                               waitingDialog.setPreferredSize(new Dimension(250, 100));
                               waitingDialog.setLocationRelativeTo(frame);
                               

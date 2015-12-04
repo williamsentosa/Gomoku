@@ -8,6 +8,8 @@ package gui.panels;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -33,6 +35,8 @@ public class OptionPanel extends JPanel {
     public OptionPanel(List<User> users) {
         this.users = users;
         this.setPreferredSize(new Dimension(width, length));
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        this.setBackground(Color.decode(backgroundColor));
     }
     
     public OptionPanel() {
@@ -42,6 +46,8 @@ public class OptionPanel extends JPanel {
         users.add(new User("Natan"));
         users.add(new User("Devina"));
         this.setPreferredSize(new Dimension(width, length));
+        this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        this.setBackground(Color.decode(backgroundColor));
     }
     public void setUsers(List<User> users) {
         this.users = users;
@@ -55,26 +61,57 @@ public class OptionPanel extends JPanel {
     }
     
     public void initComponent() {
-        this.setBackground(Color.decode(backgroundColor));
+        JPanel optionPnl = new JPanel();
+        optionPnl.setLayout(new GridLayout(2,1));
+        optionPnl.setBackground(Color.decode(backgroundColor));
+        
         JLabel header = new JLabel("What do you want to do in this room ?");
-        header.setFont(new Font("Sniglet", Font.PLAIN, 15));
-        add(header);
+        header.setHorizontalAlignment(JLabel.CENTER);
+        header.setFont(new Font("Roboto", Font.PLAIN, 20));
+        optionPnl.add(header);
+        
+        JPanel buttonsPnl = new JPanel();
+        buttonsPnl.setBackground(Color.decode(backgroundColor));
+        buttonsPnl.setLayout(new GridLayout(1,2,10,10));
+        buttonsPnl.setBorder(BorderFactory.createEmptyBorder(30, 10, 70, 10));
+        exitButton = new JButton("Watch");
+        exitButton.setFont(new Font("Sniglet", Font.PLAIN, 15));
+        exitButton.setOpaque(true);
+        exitButton.setBackground(Color.decode("#2a4d69"));
+        exitButton.setForeground(Color.decode("#e7eff6"));
+        
+        
         header.setBounds(new Rectangle(new Point(65,60), header.getPreferredSize()));
         playButton = new JButton("Play");
-        exitButton = new JButton("Watch");
-        add(playButton);
-        playButton.setBounds(new Rectangle(new Point(90,140), playButton.getPreferredSize()));
-        add(exitButton);
-        exitButton.setBounds(new Rectangle(new Point(220,140), exitButton.getPreferredSize()));
+        playButton.setFont(new Font("Sniglet", Font.PLAIN, 15));
+        playButton.setOpaque(true);
+        playButton.setPreferredSize(exitButton.getPreferredSize());
+        playButton.setBackground(Color.decode("#2a4d69"));
+        playButton.setForeground(Color.decode("#e7eff6"));
+        
+        buttonsPnl.add(playButton);
+        buttonsPnl.add(exitButton);
+        
+        optionPnl.add(buttonsPnl);
+        
+        add(optionPnl);
+        
         JPanel panelUser = new JPanel();
+        panelUser.setBackground(Color.decode(backgroundColor));
+        panelUser.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
+        panelUser.setBorder(BorderFactory.createMatteBorder(0, 2, 0, 0, Color.decode("#2a4d69")));
         panelUser.setPreferredSize(new Dimension(120, 200));
         panelUser.setLayout(new GridLayout(7,1));
         JLabel label1 = new JLabel("User in this room :");
         label1.setHorizontalAlignment(JLabel.CENTER);
+        label1.setFont(new Font("Roboto", Font.BOLD, 15));
+        label1.setForeground(Color.decode("#4b86b4"));
         panelUser.add(label1);
         
         for(User user : users) {
             JLabel label = new JLabel(user.getName());
+            label.setForeground(Color.decode("#63ace5"));
+            label.setFont(new Font("Sniglet", Font.PLAIN, 14));
             panelUser.add(label);
             label.setHorizontalAlignment(JLabel.CENTER);
         }
@@ -86,7 +123,7 @@ public class OptionPanel extends JPanel {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
         JPanel mainPanel = new JPanel();
-        frame.setSize(500,300);
+        frame.setSize(550,300);
         OptionPanel panel = new OptionPanel();
         panel.initComponent();
         mainPanel.add(panel);
