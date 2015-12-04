@@ -152,6 +152,7 @@ public class UserInterface implements Observer {
                         String roomName = (String)btnRoom.getClientProperty("roomName");
                         JDialog dialog = new JDialog();
                         dialog.setPreferredSize(new Dimension(550,300));
+                        dialog.setLocation(450, 250);
                         client.getRoom(roomName);
                         optionPanel = new OptionPanel(client.getRoom(roomName).getUsers());
                         optionPanel.initComponent();
