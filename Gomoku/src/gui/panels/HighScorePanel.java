@@ -87,55 +87,68 @@ public class HighScorePanel extends JPanel {
         JPanel highScoreTable = new JPanel();
         highScoreTable.setPreferredSize(new Dimension(500, 300));
         highScoreTable.setLayout(new GridLayout(highScores.getHighScore().size()+1, 2));
-
-        JLabel nicknameLabel = new JLabel("Nickname");
-        nicknameLabel.setHorizontalAlignment(JLabel.CENTER);
-        nicknameLabel.setFont(new Font("Sniglet", Font.PLAIN, 25));
-        nicknameLabel.setOpaque(true);
-        nicknameLabel.setBackground(Color.decode("#2a4d69"));
-        nicknameLabel.setForeground(Color.decode("#e7eff6"));
-        highScoreTable.add(nicknameLabel);
-
-        JLabel scoresLabel = new JLabel("Score");
-        scoresLabel.setHorizontalAlignment(JLabel.CENTER);
-        scoresLabel.setFont(new Font("Sniglet", Font.PLAIN, 25));
-        scoresLabel.setOpaque(true);
-        scoresLabel.setBackground(Color.decode("#2a4d69"));
-        scoresLabel.setForeground(Color.decode("#e7eff6"));
-        highScoreTable.add(scoresLabel);
         
-        int highScoresSize = 0;
-        if (highScores.getHighScore().size() < maxDisplay) {
-            highScoresSize = highScores.getHighScore().size();
+        if (highScores.getHighScore().size() > 0) {
+            JLabel nicknameLabel = new JLabel("Nickname");
+            nicknameLabel.setHorizontalAlignment(JLabel.CENTER);
+            nicknameLabel.setFont(new Font("Sniglet", Font.PLAIN, 25));
+            nicknameLabel.setOpaque(true);
+            nicknameLabel.setBackground(Color.decode("#2a4d69"));
+            nicknameLabel.setForeground(Color.decode("#e7eff6"));
+            highScoreTable.add(nicknameLabel);
+
+            JLabel scoresLabel = new JLabel("Score");
+            scoresLabel.setHorizontalAlignment(JLabel.CENTER);
+            scoresLabel.setFont(new Font("Sniglet", Font.PLAIN, 25));
+            scoresLabel.setOpaque(true);
+            scoresLabel.setBackground(Color.decode("#2a4d69"));
+            scoresLabel.setForeground(Color.decode("#e7eff6"));
+            highScoreTable.add(scoresLabel);
+
+            int highScoresSize = 0;
+            if (highScores.getHighScore().size() < maxDisplay) {
+                highScoresSize = highScores.getHighScore().size();
+            } else {
+                highScoresSize = maxDisplay;
+            }
+
+            for (int i = 0; i < highScoresSize; i++) {
+                JLabel userLabel = new JLabel(highScores.getHighScore().get(i).getUser());
+                userLabel.setHorizontalAlignment(JLabel.CENTER);
+                userLabel.setBackground(Color.white);
+                userLabel.setBorder(BorderFactory.createLineBorder(Color.decode("#2a4d69"), 1));
+                userLabel.setFont(new Font("Sniglet", Font.PLAIN, 20));
+                userLabel.setForeground(Color.decode("#2a4d69"));
+                highScoreTable.add(userLabel);
+
+                JLabel scoreLabel = new JLabel(Integer.toString(highScores.getHighScore().get(i).getScore()));
+                scoreLabel.setHorizontalAlignment(JLabel.CENTER);
+                scoreLabel.setFont(new Font("Sniglet", Font.PLAIN, 20));
+                scoreLabel.setBackground(Color.white);
+                scoreLabel.setBorder(BorderFactory.createLineBorder(Color.decode("#2a4d69"), 1));
+                scoreLabel.setForeground(Color.decode("#2a4d69"));
+                highScoreTable.add(scoreLabel);
+            }
+
+            c.gridx = 0;
+            c.gridy = 0;
+            c.weightx = 0;
+            c.weighty = 0;
+            c.anchor = GridBagConstraints.CENTER;
+
+            add(highScoreTable, c);
         } else {
-            highScoresSize = maxDisplay;
+            JLabel noHighScore = new JLabel("No High Score");
+            noHighScore.setFont(new Font("Sniglet", Font.PLAIN, 40));
+            noHighScore.setHorizontalAlignment(JLabel.CENTER);
+            noHighScore.setForeground(Color.decode("#2a4d69"));
+            c.gridx = 0;
+            c.gridy = 0;
+            c.weightx = 0;
+            c.weighty = 0;
+            c.anchor = GridBagConstraints.CENTER;
+            add(noHighScore, c);
         }
-        
-        for (int i = 0; i < highScoresSize; i++) {
-            JLabel userLabel = new JLabel(highScores.getHighScore().get(i).getUser());
-            userLabel.setHorizontalAlignment(JLabel.CENTER);
-            userLabel.setBackground(Color.white);
-            userLabel.setBorder(BorderFactory.createLineBorder(Color.decode("#2a4d69"), 1));
-            userLabel.setFont(new Font("Sniglet", Font.PLAIN, 20));
-            userLabel.setForeground(Color.decode("#2a4d69"));
-            highScoreTable.add(userLabel);
-
-            JLabel scoreLabel = new JLabel(Integer.toString(highScores.getHighScore().get(i).getScore()));
-            scoreLabel.setHorizontalAlignment(JLabel.CENTER);
-            scoreLabel.setFont(new Font("Sniglet", Font.PLAIN, 20));
-            scoreLabel.setBackground(Color.white);
-            scoreLabel.setBorder(BorderFactory.createLineBorder(Color.decode("#2a4d69"), 1));
-            scoreLabel.setForeground(Color.decode("#2a4d69"));
-            highScoreTable.add(scoreLabel);
-        }
-
-        c.gridx = 0;
-        c.gridy = 0;
-        c.weightx = 0;
-        c.weighty = 0;
-        c.anchor = GridBagConstraints.CENTER;
-
-        add(highScoreTable, c);
         
     }
     
