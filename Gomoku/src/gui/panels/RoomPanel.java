@@ -25,6 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -52,12 +53,14 @@ public class RoomPanel extends JPanel {
     public JPanel pnlBoard = new JPanel(); // Panel untuk btnCells
     public JButton[][] btnCells;
     
+    public JButton btnExit;
+    
+    public JPanel pnlRightSide = new JPanel(); // Panel di sebelah kanan layar
+    public JPanel pnlRightSideHeader = new JPanel(); // Panel untuk nama room dan tombol exit room
     public JPanel pnlInfo = new JPanel(); //Panel untuk nama room dan info player
-    public JPanel pnlRightSide = new JPanel();
     public JPanel pnlPlayers = new JPanel(); // Panel untuk nama setiap player
     public JLabel[] lblPlayers;
     public JLabel lblTurn;
-    private User user;
     public JPanel pnlChat = new JPanel();
     
     public RoomPanel(String roomName) {
@@ -65,6 +68,7 @@ public class RoomPanel extends JPanel {
         this.width = GomokuGame.size;
         this.length = GomokuGame.size;
         this.setLayout(new FlowLayout(FlowLayout.CENTER)); //Set layout
+        this.setPreferredSize(new Dimension(1250, 650));
         this.setBackground(Color.decode(backgroundColor));
         
         // Board Panel
@@ -73,37 +77,58 @@ public class RoomPanel extends JPanel {
         pnlBoard.setBackground(Color.decode(backgroundColor));
         pnlBoard.setOpaque(true);
 
-        // Panel3
+        // PanelPlayers
         pnlPlayers.setBackground(Color.decode(backgroundColor));
         
-
         // PanelRightSide
+        pnlRightSide.setBorder(BorderFactory.createLineBorder(Color.decode(backgroundColor), 5));
         pnlRightSide.setLayout(new BoxLayout(pnlRightSide, BoxLayout.Y_AXIS));
         
         // PanelInfo
         pnlInfo.setBackground(Color.decode(backgroundColor));
-        pnlInfo.setPreferredSize(new Dimension(400, 325));
+        pnlInfo.setPreferredSize(new Dimension(500, 325));
         
         pnlInfo.setLayout(new BoxLayout(pnlInfo, BoxLayout.Y_AXIS));
         ImageIcon icon = createImageIcon("Household-Room-icon-2.png", "Room Logo");
 
+         // Label untuk nama room
         JLabel roomNameLabel = new JLabel(roomName, icon, JLabel.CENTER);
         roomNameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         roomNameLabel.setFont(new Font("Roboto", Font.PLAIN, 30));
         roomNameLabel.setForeground(Color.decode("#2a4d69"));
-        //roomNameLabel.setHorizontalAlignment(JLabel.CENTER);
-        pnlInfo.add(roomNameLabel);
+        
+        // Button untuk exit room
+        btnExit = new JButton("Exit");
+        btnExit.setFont(new Font("Sniglet", Font.PLAIN, 25));
+        btnExit.setOpaque(true);
+        btnExit.setBackground(Color.decode("#2a4d69"));
+        btnExit.setForeground(Color.decode("#e7eff6"));
+        btnExit.setFocusPainted(false);
+        
+        
+        // PanelRightSideHeader
+        pnlRightSideHeader.setLayout(new BoxLayout(pnlRightSideHeader, BoxLayout.X_AXIS));
+        pnlRightSideHeader.setBackground(Color.decode(backgroundColor));
+        pnlRightSideHeader.add(roomNameLabel);
+        pnlRightSideHeader.add(Box.createRigidArea(new Dimension(250,0)));
+        pnlRightSideHeader.add(btnExit);
+        
+        pnlInfo.add(pnlRightSideHeader);
         
         lblTurn = new JLabel();
+        lblTurn.setFont(new Font("Roboto", Font.PLAIN, 25));
+        lblTurn.setForeground(Color.decode("#6e9ec3"));
+        lblTurn.setAlignmentY(Component.CENTER_ALIGNMENT);
+        lblTurn.setAlignmentX(Component.CENTER_ALIGNMENT);
         pnlInfo.add(lblTurn);
         pnlInfo.add(pnlPlayers);
         pnlInfo.setAlignmentX(CENTER_ALIGNMENT);
-        pnlInfo.setAlignmentY(TOP_ALIGNMENT);
+        pnlInfo.setAlignmentY(CENTER_ALIGNMENT);
         
         // pnlChat
         pnlChat.setBackground(Color.red);
         pnlChat.setOpaque(true);
-        pnlChat.setPreferredSize(new Dimension(400,325));
+        pnlChat.setPreferredSize(new Dimension(500,325));
         
         
         pnlRightSide.add(pnlInfo);
@@ -145,57 +170,61 @@ public class RoomPanel extends JPanel {
         LOG.info("UPDATE ROOM CALLED");
         
         int[][] board = room.getGomokuGame().getBoard();
-        for (int y = 0; y < length; y++) {
-            for (int x = 0; x < width; x++) {
-                btnCells[x][y] = new JButton();
-                btnCells[x][y].setText(symbols.get(board[x][y]));
+        
+        
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < width; j++) {
+                btnCells[i][j] = new JButton();
+                btnCells[i][j].setText(symbols.get(board[i][j]));
                 //btnCells[x][y].setBorderPainted(false);
-                btnCells[x][y].setOpaque(true);
-                btnCells[x][y].setBackground(Color.decode("#f7fafc"));
-                btnCells[x][y].setForeground(Color.decode("#2a4d69"));
-                btnCells[x][y].setBorder(BorderFactory.createLineBorder(Color.decode("#9bb6cc"), 1));
-                btnCells[x][y].setFocusPainted(false);
+                btnCells[i][j].setOpaque(true);
+                btnCells[i][j].setBackground(Color.decode("#f7fafc"));
+                btnCells[i][j].setForeground(Color.decode("#2a4d69"));
+                btnCells[i][j].setBorder(BorderFactory.createLineBorder(Color.decode("#9bb6cc"), 1));
+                btnCells[i][j].setFocusPainted(false);
                 //btnCells[x][y].setContentAreaFilled(false);
-                btnCells[x][y].putClientProperty("row", x);
-                btnCells[x][y].putClientProperty("col", y);
-                pnlBoard.add(btnCells[x][y]); //Menambah JButton ke btnCells
+                btnCells[i][j].putClientProperty("row", i);
+                btnCells[i][j].putClientProperty("col", j);
+                LOG.info("Row : " + Integer.toString(i) + ", Col : " + Integer.toString(j));
+                pnlBoard.add(btnCells[i][j]); //Menambah JButton ke btnCells
             }
         }
         
         switch(room.getStatus()) {
             case Room.IS_WON:
                 User currentTurnUser = room.getUserOfCurrentTurn();
-                for (Position p : room.getGomokuGame().checkWin(room.getTurn())) {
-                    btnCells[p.row][p.col].setBorder(BorderFactory.createLineBorder(Color.decode("#00ff00"), 1));
-                    btnCells[p.row][p.col].revalidate();
-                    btnCells[p.row][p.col].repaint();
+                LOG.info("Id :" + Integer.toString(room.getTurn() + 1));
+                LOG.info("Size :" + Integer.toString(room.getGomokuGame().checkWin(room.getTurn() + 1).size()));
+                for (Position p : room.getGomokuGame().checkWin(room.getTurn() + 1)) {
+                    btnCells[p.row][p.col].setBackground(Color.green);
+                    LOG.info("masuk loop");
                 }
-                
+                //btnCells[0][0].setBackground(Color.red);
+                lblTurn.setText(currentTurnUser.getName() + " won!");
                 String msg = "THE GAME HAS BEEN WON by " + currentTurnUser.getName() + "!";
                 LOG.info(msg);
-                JOptionPane.showMessageDialog(this, msg, room.getName(), JOptionPane.INFORMATION_MESSAGE);
+                //JOptionPane.showMessageDialog(this, msg, room.getName(), JOptionPane.INFORMATION_MESSAGE);
                 break;
         }
+        
         pnlBoard.revalidate();
         pnlBoard.repaint();
-        try {
-          String currentUserTurn = room.getUserOfCurrentTurn().getName();
-          if (currentUserTurn.compareTo(user.getName()) == 0) {
-            lblTurn.setText("Your turn");
-          } else {
-            lblTurn.setText(currentUserTurn + "'s turn");
-          }
-        } catch (NullPointerException e) {
-            LOG.log(Level.SEVERE, null, e);
-        }
-//        } catch (IndexOutOfBoundsException e) {
-//            room.setTurn(room.getUsers().indexOf(user));
-//        }
         
-        lblTurn.setFont(new Font("Sniglet", Font.PLAIN, 20));
-        lblTurn.setForeground(Color.decode("#2a4d69"));
-        lblTurn.setAlignmentY(Component.CENTER_ALIGNMENT);
-        lblTurn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        if (room.getStatus() == Room.IS_PLAYING) {
+          lblTurn.setVisible(true);
+          try {
+            String currentUserTurn = room.getUserOfCurrentTurn().getName();
+            if (currentUserTurn.compareTo(user.getName()) == 0) {
+              lblTurn.setText("Your turn");
+            } else {
+              lblTurn.setText(currentUserTurn + "'s turn");
+            }
+          } catch (NullPointerException e) {
+              LOG.log(Level.SEVERE, null, e);
+          }
+        } else {
+          lblTurn.setVisible(false);
+        }
         
         pnlPlayers.removeAll();
         lblPlayers = new JLabel[room.getUsers().size()];
@@ -203,19 +232,15 @@ public class RoomPanel extends JPanel {
         pnlPlayers.setLayout(new GridLayout((int) Math.ceil(temp), 2, 0, 0));
         for (int i = 0; i < room.getUsers().size(); i++) {
             ImageIcon icon = createImageIcon("Player1.png", "Player Logo");
-            lblPlayers[i] = new JLabel(room.getUsers().get(i).getName(), icon, JLabel.LEFT);
+            if (user.getName().compareTo(room.getUsers().get(i).getName()) == 0) {
+                lblPlayers[i] = new JLabel("You", icon, JLabel.LEFT);
+            } else {
+                lblPlayers[i] = new JLabel(room.getUsers().get(i).getName(), icon, JLabel.LEFT);
+            }
             //lblPlayers[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
             //playerNameLabel.setHorizontalAlignment(JLabel.CENTER);
             lblPlayers[i].setFont(new Font("Sniglet", Font.PLAIN, 20));
-            try {
-                if (room.getUsers().get(i).getName().compareTo(user.getName()) == 0) {
-                    lblPlayers[i].setForeground(Color.red);
-                } else {
-                    lblPlayers[i].setForeground(Color.decode("#2a4d69"));
-                }
-            } catch (NullPointerException e) {
-                LOG.log(Level.SEVERE, null, e);
-            }
+            lblPlayers[i].setForeground(Color.decode("#2a4d69"));
             
             pnlPlayers.add(lblPlayers[i]);
         }
