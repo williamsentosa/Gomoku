@@ -395,7 +395,6 @@ public class UserInterface implements Observer {
                     break;
                 case "update-high-scores":
                     if (highScorePanel != null) {
-                        System.out.println("LKJLSDKJF");
                         highScorePanel.initComponent(client.getHighScores());
 
                         highScorePanel.btnBack.addActionListener(new ActionListener() {
