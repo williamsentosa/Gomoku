@@ -5,3 +5,5 @@
 *~
 .DS*
 *.orig
+/Gomoku/dist/
+*.class
