@@ -36,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
+import module.HighScores;
 import module.Room;
 import module.User;
 import org.jdesktop.swingx.prompt.PromptSupport;
@@ -227,38 +228,32 @@ public class RoomPanel extends JPanel {
         int[][] board = room.getGomokuGame().getBoard();
         
         
-        for (int i = 0; i < length; i++) {
-            for (int j = 0; j < width; j++) {
-                btnCells[i][j] = new JButton();
-                btnCells[i][j].setText(symbols.get(board[i][j]));
+        for (int y = 0; y < length; y++) {
+            for (int x = 0; x < width; x++) {
+                btnCells[x][y] = new JButton();
+                btnCells[x][y].setText(symbols.get(board[x][y]));
                 //btnCells[x][y].setBorderPainted(false);
-                btnCells[i][j].setOpaque(true);
-                btnCells[i][j].setBackground(Color.decode("#f7fafc"));
-                btnCells[i][j].setForeground(Color.decode("#2a4d69"));
-                btnCells[i][j].setBorder(BorderFactory.createLineBorder(Color.decode("#9bb6cc"), 1));
-                btnCells[i][j].setFocusPainted(false);
+                btnCells[x][y].setOpaque(true);
+                btnCells[x][y].setBackground(Color.decode("#f7fafc"));
+                btnCells[x][y].setForeground(Color.decode("#2a4d69"));
+                btnCells[x][y].setBorder(BorderFactory.createLineBorder(Color.decode("#9bb6cc"), 1));
+                btnCells[x][y].setFocusPainted(false);
                 //btnCells[x][y].setContentAreaFilled(false);
-                btnCells[i][j].putClientProperty("row", i);
-                btnCells[i][j].putClientProperty("col", j);
-                LOG.info("Row : " + Integer.toString(i) + ", Col : " + Integer.toString(j));
-                pnlBoard.add(btnCells[i][j]); //Menambah JButton ke btnCells
+                btnCells[x][y].putClientProperty("row", x);
+                btnCells[x][y].putClientProperty("col", y);
+                pnlBoard.add(btnCells[x][y]); //Menambah JButton ke btnCells
             }
         }
-        
+        User currentTurnUser = room.getUserOfCurrentTurn();
         switch(room.getStatus()) {
             case Room.IS_WON:
-                User currentTurnUser = room.getUserOfCurrentTurn();
-                LOG.info("Id :" + Integer.toString(room.getTurn() + 1));
-                LOG.info("Size :" + Integer.toString(room.getGomokuGame().checkWin(room.getTurn() + 1).size()));
+                Position pos = room.getGomokuGame().checkWin(room.getTurn() + 1).get(0);
+                int id = room.getGomokuGame().getBoard()[pos.row][pos.col] - 1;
                 for (Position p : room.getGomokuGame().checkWin(room.getTurn() + 1)) {
                     btnCells[p.row][p.col].setBackground(Color.green);
-                    LOG.info("masuk loop");
                 }
-                //btnCells[0][0].setBackground(Color.red);
-                lblTurn.setText(currentTurnUser.getName() + " won!");
-                String msg = "THE GAME HAS BEEN WON by " + currentTurnUser.getName() + "!";
+                String msg = "THE GAME HAS BEEN WON by " + room.getUsers().get(id).getName() + "!";
                 LOG.info(msg);
-                //JOptionPane.showMessageDialog(this, msg, room.getName(), JOptionPane.INFORMATION_MESSAGE);
                 break;
         }
         
@@ -277,8 +272,10 @@ public class RoomPanel extends JPanel {
           } catch (NullPointerException e) {
               LOG.log(Level.SEVERE, null, e);
           }
+        } else if (room.getStatus() == Room.IS_WON) {
+            lblTurn.setText(currentTurnUser.getName() + " won!");
         } else {
-          lblTurn.setVisible(false);
+            lblTurn.setVisible(false);
         }
         
         pnlPlayers.removeAll();
@@ -292,8 +289,6 @@ public class RoomPanel extends JPanel {
             } else {
                 lblPlayers[i] = new JLabel(room.getUsers().get(i).getName(), icon, JLabel.LEFT);
             }
-            //lblPlayers[i].setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-            //playerNameLabel.setHorizontalAlignment(JLabel.CENTER);
             lblPlayers[i].setFont(new Font("Sniglet", Font.PLAIN, 20));
             lblPlayers[i].setForeground(Color.decode("#2a4d69"));
             

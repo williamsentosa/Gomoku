@@ -35,6 +35,7 @@ public class UserInterface implements Observer {
     LoginPanel loginPanel;
     RoomsPanel roomsPanel;
     RoomPanel roomPanel;
+    HighScorePanel highScorePanel;
     JButton[][] grid; //Grid untuk papan gomoku
     String backgroundColor = "#f0f5f9";
     OptionPanel optionPanel;
@@ -182,6 +183,7 @@ public class UserInterface implements Observer {
                 }
             });
         }
+         
     }
     
     public void showRooms() {
@@ -198,10 +200,41 @@ public class UserInterface implements Observer {
                 }
             }
         });
+        roomsPanel.btnHighScore.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object source = e.getSource();
+                if (source instanceof Component) {
+                    showHighScores();
+                    frame.setContentPane(highScorePanel);
+                    frame.invalidate();
+                    frame.validate();
+                }
+
+            }
+            
+        });
         initRooms();
         frame.setContentPane(roomsPanel);
     }
 
+    public void showHighScores() {
+        highScorePanel = new HighScorePanel("scores");
+        highScorePanel.initComponent();
+        
+        highScorePanel.btnBack.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object source = e.getSource();
+                if (source instanceof Component) {
+                    frame.setContentPane(roomsPanel);
+                    frame.invalidate();
+                    frame.validate();
+                }
+            }
+        });
+    }
+    
     public void playGame(String roomName) {
         roomPanel = new RoomPanel(roomName);
         
@@ -298,12 +331,8 @@ public class UserInterface implements Observer {
                                 waitingDialog.dispose();
                                 
                                 roomPanel.btnExit.setEnabled(true);
-                                
+                                sendStartRoomCommand(roomPanel.getRoomName());
                                 LOG.info("YOU CAN NOW START THE GAME. CLICK THE BOARD ONCE TO START.");
-//                                if (JOptionPane.showConfirmDialog(roomPanel, "The game can now be started. Start now?", currentRoom.getName(), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-//                                    sendStartRoomCommand(currentRoom.getName());
-//                                }
-                                
                                 break;
                             case Room.IS_WAITING:
                               LOG.info("WATING FOR OTHER PLAYER");
@@ -338,8 +367,6 @@ public class UserInterface implements Observer {
                                                     JButton button = (JButton) source;
                                                     sendMoveCommand(currentRoom.getName(), (int) button.getClientProperty("row"), (int) button.getClientProperty("col"));
                                                     break;
-                                                case Room.IS_PLAYABLE:
-                                                    sendStartRoomCommand(currentRoom.getName());
                                             }
                                         } 
                                     }
@@ -356,6 +383,8 @@ public class UserInterface implements Observer {
                                 if (source instanceof Component) {
                                         if (roomPanel != null) {
                                             sendExitRoomCommand(currentRoom.getName());
+                                            showRooms();
+                                            roomPanel = null;
                                             frame.setContentPane(roomsPanel);
                                             frame.invalidate();
                                             frame.validate();
@@ -366,9 +395,10 @@ public class UserInterface implements Observer {
                         
                     }
                     break;
-                case "error":
-                    roomPanel.lblTurn.setText("An error occurred");
-                    break;
+                default:
+                    if (arg.toString().startsWith("error")) {
+                        roomPanel.lblTurn.setText(arg.toString().replaceFirst("error", ""));
+                    }
             }
         }
     }

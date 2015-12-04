@@ -60,8 +60,8 @@ public class OptionPanel extends JPanel {
         header.setFont(new Font("Sniglet", Font.PLAIN, 15));
         add(header);
         header.setBounds(new Rectangle(new Point(65,60), header.getPreferredSize()));
-        playButton = new JButton("Join Room");
-        exitButton = new JButton("Exit Room");
+        playButton = new JButton("Play");
+        exitButton = new JButton("Watch");
         add(playButton);
         playButton.setBounds(new Rectangle(new Point(90,140), playButton.getPreferredSize()));
         add(exitButton);

@@ -16,6 +16,8 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,11 +42,22 @@ public class HighScores implements Serializable {
                 scores.add(hs);
             }
             br.close();
+            sortScores();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(HighScores.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(HighScores.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void sortScores() {
+        Collections.sort(scores, new Comparator<HighScore>(){
+            public int compare(HighScore o1, HighScore o2) {
+                return o1.getScore() > o2.getScore() ? -1
+                    : o1.getScore() < o2.getScore() ? 1
+                    : 0;
+            }
+        });
     }
     
     public void addHighScore(String user) {
@@ -67,6 +80,7 @@ public class HighScores implements Serializable {
                 break;
             }
         }
+        sortScores();
     }
     
     public int getSize() {

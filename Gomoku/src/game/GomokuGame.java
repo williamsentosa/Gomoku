@@ -235,17 +235,16 @@ public class GomokuGame implements Serializable {
     
     public List<Position> checkWin(int id) {
         Position p = lastMove;
+        System.out.println("last Move : " + lastMove.row + " " + lastMove.col);
         List<Position> result = new ArrayList<Position>();
-        if(board[p.row][p.col] == defaultId) {
-            if ( checkVertically(id,p).size() >= 5 ) {
-                result = checkVertically(id,p);
-            } else if ( checkHorizontally(id,p).size() >= 5) {
-                result = checkHorizontally(id,p);
-            } else if ( checkIncreasingDiagonally(id,p).size() >= 5) {
-                result = checkIncreasingDiagonally(id,p);
-            } else if ( checkDecreasingDiagonally(id,p).size() >= 5) {
-                result = checkDecreasingDiagonally(id,p);
-            }
+        if ( checkVertically(id,p).size() >= 5 ) {
+            result = checkVertically(id,p);
+        } else if ( checkHorizontally(id,p).size() >= 5) {
+            result = checkHorizontally(id,p);
+        } else if ( checkIncreasingDiagonally(id,p).size() >= 5) {
+            result = checkIncreasingDiagonally(id,p);
+        } else if ( checkDecreasingDiagonally(id,p).size() >= 5) {
+            result = checkDecreasingDiagonally(id,p);
         }
         return result;
     }
@@ -258,7 +257,7 @@ public class GomokuGame implements Serializable {
         boolean finished = false;
         int id = 0;
         List<Position> result = new ArrayList<Position>();
-        int player = 3;
+        int player = 1;
         while(!finished) {
             id = (id % player) + 1;
             System.out.print("Pemain " + id + " input : ");
@@ -269,6 +268,7 @@ public class GomokuGame implements Serializable {
             finished = result.size() >= 5;
         }
         System.out.println("Pemenangnya adalah Player " + id);
+        result = game.checkWin(1);
         System.out.println("Langkah menangnya : ");
         for(Position p : result) {
             System.out.println("[" + p.row + "," + p.col + "]");

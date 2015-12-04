@@ -149,7 +149,7 @@ public class Client extends Observable implements Observer  {
                     break;
                 case "error":
                     setChanged();
-                    notifyObservers("error");
+                    notifyObservers("error " + resp.getContent());
                     System.err.println("ERROR FOUND: " + resp.getContent());
                 default:
                     break;

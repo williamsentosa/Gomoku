@@ -98,7 +98,7 @@ public class Server implements Runnable
                         resp = new Response("error", "room not found");
                         for (Room r : rooms) {
                             if (r.getName().equals(roomToStart)) {
-                                if (r.getStatus() == Room.IS_PLAYABLE) {
+                                if (r.getStatus() == Room.IS_PLAYABLE || r.getStatus() == Room.IS_PLAYING) {
                                     r.setStatus(Room.IS_PLAYING);
                                     resp = new Response("get-rooms", rooms, true);
                                 } else {
@@ -112,9 +112,26 @@ public class Server implements Runnable
                     case "exit-room":
                         String roomToExit = req.getParameters().get(0);
                         resp = new Response("error", "room not found");
+                        boolean foundInRoom = false;
+                        for (Room room : rooms) {
+                            if (room.getUsers().contains(user)) {
+
+                                foundInRoom = true;
+                            }
+                        }
                         for (Room r : rooms) {
                             if (r.getName().equals(roomToExit)) {
+                                if (r.getUserOfCurrentTurn() != null) {
+                                    if (r.getUserOfCurrentTurn().getId() == user.getId()) {
+                                        r.nextTurn();
+                                    }
+                                }
                                 r.removeUser(user);
+
+                                if (r.getUsers().size() == 0) {
+                                    r.getGomokuGame().resetBoard();
+                                    r.setStatus(Room.IS_WAITING);
+                                }
                                 
                                 resp = new Response("get-rooms", rooms, true);
                                 break;
@@ -133,9 +150,11 @@ public class Server implements Runnable
                                     if (user.equals(r.getUserOfCurrentTurn())) {
                                         if (r.getGomokuGame().getBoard()[row][col] == GomokuGame.defaultId) {
                                             List<Position> result = r.getGomokuGame().insertToBoard(r.getTurn() + 1, new Position(row, col));
-
                                             boolean finished = result.size() >= 5;
                                             if (finished) {
+                                                highScores.addHighScore(user.getName());
+                                                highScores.incrHighScore(user.getName());
+                                                highScores.writeToFile(fileName);
                                                 r.setStatus(Room.IS_WON);
                                             } else {
                                                 r.nextTurn();
@@ -227,6 +246,7 @@ public class Server implements Runnable
                     }
                 }
                 
+                allSockets.remove(clientSocket);
                 if (foundInRoom) {
                     Response resp = new Response("get-rooms", rooms, true);
                     for (Socket socket : allSockets) {
@@ -249,7 +269,6 @@ public class Server implements Runnable
                     }
                 }
                 
-                allSockets.remove(clientSocket);
                 try {
                     clientSocket.close();
                 } catch (IOException ex) {
