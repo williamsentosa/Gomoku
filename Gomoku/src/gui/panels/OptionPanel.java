@@ -11,6 +11,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -25,14 +27,16 @@ public class OptionPanel extends JPanel {
     private String backgroundColor = "#f0f5f9";
     private final int width = 500;
     private final int length = 300;
+    public JButton playButton;
+    public JButton exitButton;
     
-    public OptionPanel(List<User> users, String room) {
+    public OptionPanel(List<User> users) {
         this.users = users;
         this.setPreferredSize(new Dimension(width, length));
     }
     
     public OptionPanel() {
-        setLayout(null);
+        this.setLayout(null);
         users = new ArrayList<User>();
         users.add(new User("William"));
         users.add(new User("Natan"));
@@ -56,8 +60,8 @@ public class OptionPanel extends JPanel {
         header.setFont(new Font("Sniglet", Font.PLAIN, 15));
         add(header);
         header.setBounds(new Rectangle(new Point(65,60), header.getPreferredSize()));
-        JButton playButton = new JButton("Play");
-        JButton exitButton = new JButton("Exit");
+        playButton = new JButton("Join Room");
+        exitButton = new JButton("Exit Room");
         add(playButton);
         playButton.setBounds(new Rectangle(new Point(90,140), playButton.getPreferredSize()));
         add(exitButton);
@@ -65,13 +69,18 @@ public class OptionPanel extends JPanel {
         JPanel panelUser = new JPanel();
         panelUser.setPreferredSize(new Dimension(120, 200));
         panelUser.setLayout(new GridLayout(7,1));
-        panelUser.add(new JLabel("User in this room :"));
+        JLabel label1 = new JLabel("User in this room :");
+        label1.setHorizontalAlignment(JLabel.CENTER);
+        panelUser.add(label1);
+        
         for(User user : users) {
             JLabel label = new JLabel(user.getName());
             panelUser.add(label);
+            label.setHorizontalAlignment(JLabel.CENTER);
         }
         add(panelUser);
         panelUser.setBounds(new Rectangle(new Point(350,20), panelUser.getPreferredSize()));
+        
     }
     
     public static void main(String[] args) {

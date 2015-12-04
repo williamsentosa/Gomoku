@@ -32,8 +32,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 import module.Room;
 import module.User;
+import org.jdesktop.swingx.prompt.PromptSupport;
 
 /**
  *
@@ -56,9 +60,12 @@ public class RoomPanel extends JPanel {
     public JPanel pnlRightSide = new JPanel();
     public JPanel pnlPlayers = new JPanel(); // Panel untuk nama setiap player
     public JLabel[] lblPlayers;
+    public JLabel[] lblChats;
     public JLabel lblTurn;
     private User user;
     public JPanel pnlChat = new JPanel();
+    public JTextField chatField;
+    public JPanel panel1 = new JPanel();
     
     public RoomPanel(String roomName) {
         this.roomName = roomName;
@@ -100,11 +107,7 @@ public class RoomPanel extends JPanel {
         pnlInfo.setAlignmentX(CENTER_ALIGNMENT);
         pnlInfo.setAlignmentY(TOP_ALIGNMENT);
         
-        // pnlChat
-        pnlChat.setBackground(Color.red);
-        pnlChat.setOpaque(true);
-        pnlChat.setPreferredSize(new Dimension(400,325));
-        
+        initPanelChat();
         
         pnlRightSide.add(pnlInfo);
         pnlRightSide.add(pnlChat);
@@ -113,6 +116,32 @@ public class RoomPanel extends JPanel {
         this.add(pnlRightSide);
     }
 
+    private void initPanelChat() {
+        pnlChat.setBackground(Color.white);
+        pnlChat.setOpaque(true);
+        pnlChat.setPreferredSize(new Dimension(400,325));
+        pnlChat.setLayout(new BoxLayout(pnlChat, BoxLayout.Y_AXIS));
+        panel1.setLayout(new BoxLayout(panel1, BoxLayout.Y_AXIS));
+        JPanel panelHeader = new JPanel();
+        JLabel header = new JLabel("Chats");
+        header.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelHeader.add(header);
+        panelHeader.setBackground(Color.decode("#2a4d69"));
+        header.setFont(new Font("Sniglet", Font.BOLD, 25));
+        header.setOpaque(true);
+        header.setBackground(Color.decode("#2a4d69"));
+        header.setForeground(Color.decode("#e7eff6"));
+        chatField = new JTextField(20);
+        JScrollPane scrollPane = new JScrollPane(panel1);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(400, 270));
+        pnlChat.add(panelHeader);
+        pnlChat.add(scrollPane);
+        pnlChat.add(chatField);
+        chatField.setPreferredSize(new Dimension(400,30));
+    }
+    
     public String getRoomName() {
         return roomName;
     }
@@ -136,6 +165,32 @@ public class RoomPanel extends JPanel {
             LOG.log(Level.SEVERE, null, ex);
         }
         return r;
+    }
+    
+    public void updatePanelChat(Room room, User user) {
+        pnlChat.removeAll();
+        panel1.removeAll();
+        initPanelChat();
+        int size = room.getChats().size();
+        lblChats = new JLabel[size];
+        for (int i = 0; i < size; i++) {
+            String name = room.getChats().get(i).getUser().getName();
+            String chat = room.getChats().get(i).getContent();
+            JLabel header = new JLabel(name);
+            header.setFont(new Font("Roboto", Font.BOLD, 12));
+            header.setAlignmentX(Component.CENTER_ALIGNMENT);
+            JLabel label = new JLabel(chat);
+            label.setFont(new Font("Roboto", Font.PLAIN, 12));
+            label.setAlignmentX(Component.CENTER_ALIGNMENT);
+            JLabel label1 = new JLabel("  ");
+            panel1.add(header);
+            panel1.add(label);
+            panel1.add(label1);
+        }
+        panel1.revalidate();
+        panel1.repaint();
+        pnlChat.revalidate();
+        pnlChat.repaint();
     }
     
     public void updateRoom(Room room, User user) {
@@ -221,5 +276,7 @@ public class RoomPanel extends JPanel {
         }
         pnlPlayers.revalidate();
         pnlPlayers.repaint();
+        
+        updatePanelChat(room, user);
     }
 }

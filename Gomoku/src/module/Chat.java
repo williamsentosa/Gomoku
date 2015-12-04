@@ -5,11 +5,13 @@
  */
 package module;
 
+import java.io.Serializable;
+
 /**
  *
  * @author natanelia
  */
-public class Chat {
+public class Chat implements Serializable {
     private User user;
     private String content;
 

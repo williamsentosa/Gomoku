@@ -36,8 +36,9 @@ public class UserInterface implements Observer {
     RoomPanel roomPanel;
     JButton[][] grid; //Grid untuk papan gomoku
     String backgroundColor = "#f0f5f9";
-
+    OptionPanel optionPanel;
     Client client;
+    ActionListener chatListener;
 
     public UserInterface() {
         frame = new MainFrame("Gomoku"); // Membuat frame
@@ -99,7 +100,11 @@ public class UserInterface implements Observer {
     public void sendMoveCommand(String roomName, int row, int col) {
         client.sendCommand("move " + roomName + " " + row + " " + col);
     }
-
+    
+    public void sendChatCommand(String roomName, String content) {
+        client.sendCommand("chat " + roomName + " " + content);
+    }
+    
     public void login() {
         loginPanel = new LoginPanel();
         
@@ -128,10 +133,56 @@ public class UserInterface implements Observer {
         
         frame.setContentPane(loginPanel);
     }
-
+    
+    public void initRooms() {
+        for (JButton btnRoom : roomsPanel.btnRooms) {
+            btnRoom.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Object source = e.getSource();
+                    if (source instanceof Component) {
+                        String[] b = { "Play", "Watch" };    
+                        int returnValue = JOptionPane.showOptionDialog(null, "What do you want to do in this room ?", "Option",
+                                JOptionPane.PLAIN_MESSAGE, 0, null, b, b[0]);
+                        if(returnValue == 0) { //Play
+                            String roomName = (String)btnRoom.getClientProperty("roomName");
+                            JDialog dialog = new JDialog();
+                            dialog.setPreferredSize(new Dimension(500,300));
+                            client.getRoom(roomName);
+                            optionPanel = new OptionPanel(client.getRoom(roomName).getUsers());
+                            optionPanel.initComponent();
+                            optionPanel.playButton.addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent e) {
+                                    String roomName = (String)btnRoom.getClientProperty("roomName");
+                                    sendJoinRoomCommand(roomName);
+                                    playGame(roomName);
+                                    if (roomPanel != null) {
+                                        dialog.dispose();
+                                        frame.setContentPane(roomPanel);
+                                        frame.invalidate();
+                                        frame.validate();
+                                    }
+                                }
+                            });
+                            optionPanel.exitButton.addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent e) { 
+                                    dialog.dispose();
+                                }
+                            });
+                            dialog.add(optionPanel);
+                            dialog.pack();
+                            dialog.setVisible(true);
+                        } else if(returnValue == 1) { //Watch
+                            
+                        }
+                    }
+                }
+            });
+        }
+    }
+    
     public void showRooms() {
         roomsPanel = new RoomsPanel(client.getMe(), client.getRooms());
-        
         roomsPanel.btnCreateRoom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -144,26 +195,7 @@ public class UserInterface implements Observer {
                 }
             }
         });
-        
-        for (JButton btnRoom : roomsPanel.btnRooms) {
-            btnRoom.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    Object source = e.getSource();
-                    if (source instanceof Component) {
-                        String roomName = (String)btnRoom.getClientProperty("roomName");
-                        sendJoinRoomCommand(roomName);
-                        playGame(roomName);
-                        if (roomPanel != null) {
-                            frame.setContentPane(roomPanel);
-                            frame.invalidate();
-                            frame.validate();
-                        }
-                    }
-                }
-            });
-        }
-        
+        initRooms();
         frame.setContentPane(roomsPanel);
     }
 
@@ -187,9 +219,24 @@ public class UserInterface implements Observer {
             }
         }
         
+        chatListener = new ActionListener() {
+        @Override
+            public void actionPerformed(ActionEvent e) {
+                Object source = e.getSource();
+                if (source instanceof Component) {
+                    System.out.println(roomName + " " + roomPanel.chatField.getText());
+                    sendChatCommand(roomName, roomPanel.chatField.getText());
+                } 
+            }
+        };
+        
         frame.add(roomPanel);
     }
-
+    
+    public void initChatActionPerformed() {
+        
+    }
+    
     /**
      * Returns an ImageIcon, or null if the path was invalid.
      */
@@ -231,37 +278,13 @@ public class UserInterface implements Observer {
                 case "update-rooms":
                     if (roomsPanel != null) {
                         roomsPanel.updateRooms(client.getRooms());
-                        for (JButton btnRoom : roomsPanel.btnRooms) {
-                            btnRoom.addActionListener(new ActionListener() {
-                                @Override
-                                public void actionPerformed(ActionEvent e) {
-                                    Object source = e.getSource();
-                                    if (source instanceof Component) {
-                                        String roomName = (String)btnRoom.getClientProperty("roomName");
-                                        for (Room room : client.getRooms()) {
-                                            if (room.getName().equals(roomName)) {
-                                                sendJoinRoomCommand(roomName);
-                                                playGame(roomName);
-                                                if (roomPanel != null) {
-                                                    frame.setContentPane(roomPanel);
-                                                    frame.invalidate();
-                                                    frame.validate();
-                                                }
-                                                break;
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }
+                        initRooms();
                     }
-
                     try {
                         Thread.sleep(100);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(UserInterface.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
                     if (roomPanel != null) {
                         Room currentRoom = client.getRoom(roomPanel.getRoomName());
                         roomPanel.updateRoom(currentRoom, client.getMe());
@@ -273,7 +296,6 @@ public class UserInterface implements Observer {
 //                                }
                                 break;
                         }
-                        
                         for (JButton[] btnRow : roomPanel.btnCells) {
                             for (JButton btnCell : btnRow) {
                                 btnCell.addActionListener(new ActionListener() {
@@ -289,12 +311,14 @@ public class UserInterface implements Observer {
                                                 case Room.IS_PLAYABLE:
                                                     sendStartRoomCommand(currentRoom.getName());
                                             }
-                                        }
+                                        } 
                                     }
                                 });
                             }
+                            
+                            roomPanel.chatField.removeActionListener(chatListener);
+                            roomPanel.chatField.addActionListener(chatListener);
                         }
-                        
                     }
                     break;
             }

@@ -172,8 +172,10 @@ public class Server implements Runnable
                         break;
                     case "chat":
                         String roomToChat = req.getParameters().get(0);
-                        String content = req.getParameters().get(1);
-                        
+                        String content = new String();
+                        for(int i=1; i<req.getParameters().size(); i++) {
+                            content = content + req.getParameters().get(i) + " ";
+                        }        
                         resp = new Response("error", "room not found");
                         for (Room r : rooms) {
                             if (r.getName().equals(roomToChat)) {
