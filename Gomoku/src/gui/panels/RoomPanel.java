@@ -244,7 +244,7 @@ public class RoomPanel extends JPanel {
                 pnlBoard.add(btnCells[x][y]); //Menambah JButton ke btnCells
             }
         }
-        User currentTurnUser = room.getUserOfCurrentTurn();
+        
         switch(room.getStatus()) {
             case Room.IS_WON:
                 Position pos = room.getGomokuGame().checkWin(room.getTurn() + 1).get(0);
@@ -273,7 +273,7 @@ public class RoomPanel extends JPanel {
               LOG.log(Level.SEVERE, null, e);
           }
         } else if (room.getStatus() == Room.IS_WON) {
-            lblTurn.setText(currentTurnUser.getName() + " won!");
+            lblTurn.setText(room.getUserOfCurrentTurn().getName() + " won!");
         } else {
             lblTurn.setVisible(false);
         }
