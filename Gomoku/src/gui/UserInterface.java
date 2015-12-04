@@ -145,40 +145,44 @@ public class UserInterface implements Observer {
                 public void actionPerformed(ActionEvent e) {
                     Object source = e.getSource();
                     if (source instanceof Component) {
-                        String[] b = { "Play", "Watch" };    
-                        int returnValue = JOptionPane.showOptionDialog(null, "What do you want to do in this room ?", "Option",
-                                JOptionPane.PLAIN_MESSAGE, 0, null, b, b[0]);
-                        if(returnValue == 0) { //Play
-                            String roomName = (String)btnRoom.getClientProperty("roomName");
-                            JDialog dialog = new JDialog();
-                            dialog.setPreferredSize(new Dimension(500,300));
-                            client.getRoom(roomName);
-                            optionPanel = new OptionPanel(client.getRoom(roomName).getUsers());
-                            optionPanel.initComponent();
-                            optionPanel.playButton.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent e) {
-                                    String roomName = (String)btnRoom.getClientProperty("roomName");
-                                    sendJoinRoomCommand(roomName);
-                                    playGame(roomName);
-                                    if (roomPanel != null) {
-                                        dialog.dispose();
-                                        frame.setContentPane(roomPanel);
-                                        frame.invalidate();
-                                        frame.validate();
-                                    }
-                                }
-                            });
-                            optionPanel.exitButton.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent e) { 
+                        String roomName = (String)btnRoom.getClientProperty("roomName");
+                        JDialog dialog = new JDialog();
+                        dialog.setPreferredSize(new Dimension(500,300));
+                        client.getRoom(roomName);
+                        optionPanel = new OptionPanel(client.getRoom(roomName).getUsers());
+                        optionPanel.initComponent();
+                        optionPanel.playButton.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                String roomName = (String)btnRoom.getClientProperty("roomName");
+                                sendJoinRoomCommand(roomName);
+                                playGame(roomName);
+                                if (roomPanel != null) {
                                     dialog.dispose();
+                                    frame.setContentPane(roomPanel);
+                                    frame.invalidate();
+                                    frame.validate();
                                 }
-                            });
-                            dialog.add(optionPanel);
-                            dialog.pack();
-                            dialog.setVisible(true);
-                        } else if(returnValue == 1) { //Watch
-                            
-                        }
+                            }
+                        });
+                        optionPanel.exitButton.addActionListener(new ActionListener() { // Watch only
+                            public void actionPerformed(ActionEvent e) { 
+                                String roomName = (String)btnRoom.getClientProperty("roomName");
+                                System.out.println("Room name : " + roomName);
+                                System.out.println("User : " + client.getMe().getName());
+                                playGame(roomName);
+                                if (roomPanel != null) {
+                                    dialog.dispose();
+                                    roomPanel.updateRoom(client.getRoom(roomName), client.getMe());
+                                    frame.setContentPane(roomPanel);
+                                    frame.invalidate();
+                                    frame.validate();
+                                }
+                                dialog.dispose();
+                            }
+                        });
+                        dialog.add(optionPanel);
+                        dialog.pack();
+                        dialog.setVisible(true);
                     }
                 }
             });
