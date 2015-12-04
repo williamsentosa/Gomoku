@@ -37,6 +37,12 @@ public class HighScorePanel extends JPanel {
         highScores = new HighScores(file);
     }
     
+    public HighScorePanel(HighScores hs) {
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));   
+        this.file = file;
+        highScores = hs;
+    }
+    
     public void updateComponent() {
         this.removeAll();
         highScores = new HighScores(file);

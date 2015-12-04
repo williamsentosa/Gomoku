@@ -74,7 +74,7 @@ public class UserInterface implements Observer {
     }
     
     public void sendGetRoomsCommand() {
-        client.sendCommand("get-rooms");
+        client.sendCommand("get-rooms" + "test");
     }
     
     public void sendGetRoomCommand(String roomName) {
@@ -82,7 +82,7 @@ public class UserInterface implements Observer {
     }
     
     public void sendGetUsersCommand() {
-        client.sendCommand("get-users");
+        client.sendCommand("get-users" + "test");
     }
     
     public void sendCreateRoomCommand(String roomName) {
@@ -107,6 +107,10 @@ public class UserInterface implements Observer {
     
     public void sendChatCommand(String roomName, String content) {
         client.sendCommand("chat " + roomName + " " + content);
+    }
+    
+    public void sendGetHighScoresCommand() {
+        client.sendCommand("get-high-scores" + "test");
     }
     
     public void login() {
@@ -223,7 +227,8 @@ public class UserInterface implements Observer {
     }
 
     public void showHighScores() {
-        highScorePanel = new HighScorePanel("scores");
+        this.sendGetHighScoresCommand();
+        highScorePanel = new HighScorePanel(client.getHighScores());
         highScorePanel.initComponent();
         
         highScorePanel.btnBack.addActionListener(new ActionListener() {
@@ -398,6 +403,9 @@ public class UserInterface implements Observer {
                         });
                         
                     }
+                    break;
+                case "update-high-scores":
+                    
                     break;
                 default:
                     if (arg.toString().startsWith("error") && roomPanel != null) {
